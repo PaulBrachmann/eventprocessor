@@ -1,0 +1,64 @@
+{
+  "name": "eventprocessor",
+  "version": "0.1.0",
+  "description": "A middleware-based event-handling system",
+  "keywords": [],
+  "homepage": "https://github.com/Malpaux/eventhandler#readme",
+  "bugs": {
+    "url": "https://github.com/Malpaux/eventhandler/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": "Malpaux (malpaux.com)",
+  "contributors": [
+    {
+      "name": "Paul Brachmann",
+      "email": "paul.brachmann@malpaux.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Malpaux/eventhandler.git"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.prod.json -d",
+    "clean": "rimraf dist",
+    "lint": "tslint -p tsconfig.json",
+    "lint:fix": "tslint -p tsconfig.json --fix",
+    "test": "jest --env=jsdom",
+    "test:coverage": "jest --env=jsdom --coverage"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^20.0.2",
+    "@types/node": "^8.0.20",
+    "jest": "^20.0.4",
+    "rimraf": "^2.6.1",
+    "ts-jest": "^20.0.7",
+    "tslint": "^5.5.0",
+    "tslint-config-airbnb": "^5.2.1",
+    "typescript": "^2.4.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "mapCoverage": true,
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/src/grammar/"
+    ],
+    "roots": [
+      "<rootDir>/src/"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(ts|js)$",
+    "testPathIgnorePatterns": [
+      "<rootDir>/(build|dist|docs|node_modules)/"
+    ],
+    "testEnvironment": "node"
+  }
+}
