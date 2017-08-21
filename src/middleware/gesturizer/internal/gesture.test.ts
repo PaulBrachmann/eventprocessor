@@ -15,6 +15,13 @@ describe('gesture', () => {
     expect(gesture.current).toBeInstanceOf(TransformData);
     expect(gesture.offset).toBeInstanceOf(TransformData);
 
+    const gesture2 = new Gesture(new TransformData(24, 256, 1, 0));
+    const transformData = gesture2.getOffset();
+    expect(transformData.translateX).toBe(0);
+    expect(transformData.translateY).toBe(0);
+    expect(transformData.scale).toBe(1);
+    expect(transformData.rotate2d).toBe(0);
+
     expect(new Gesture(new TransformData(), { key: 'value' }));
   });
 

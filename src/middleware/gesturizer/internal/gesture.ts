@@ -19,7 +19,9 @@ class Gesture {
     public initial: TransformData = new TransformData(),
     /** Gesture context (to store arbitrary data related to the gesture) */
     public context: { [key: string]: any } = {},
-  ) {}
+  ) {
+    this.current.set(initial);
+  }
 
   /** Get the current offset */
   public getOffset(): TransformData {
