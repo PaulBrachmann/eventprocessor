@@ -6,8 +6,10 @@
  */
 
 export interface PointerDetail {
+  _scale?: number;
   clientX: number;
   clientY: number;
+  identifier: string;
   [prop: string]: any;
 }
 

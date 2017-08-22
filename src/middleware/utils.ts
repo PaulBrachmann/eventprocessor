@@ -23,6 +23,20 @@ export const classify = <T>(
     next();
   };
 
+/** Default mouse/touch event map */
+const defaultEventMap = {
+  DOMMouseScroll: ['wheel', 'wheel'],
+  mousedown: ['mouse', 'start'],
+  mousemove: ['mouse', 'move'],
+  mouseup: ['mouse', 'end'],
+  mousewheel: ['wheel', 'wheel'],
+  touchend: ['touch', 'end'],
+  touchmove: ['touch', 'move'],
+  touchstart: ['touch', 'start'],
+  wheel: ['wheel', 'wheel'],
+};
+export { defaultEventMap as eventMap };
+
 /** Event logging middleware */
 export const log = <T>(unknown?: boolean, production?: boolean): EventMiddleware<T> =>
   (next, { event, ids }) => {
@@ -39,6 +53,33 @@ export const preventDefault = <T>(unknown?: boolean): EventMiddleware<T> =>
       event.preventDefault();
       event.stopPropagation();
     }
+    next();
+  };
+
+/** Id reducer middleware */
+export const reduceIds = <ID, T extends { ids: ID[] }>(): EventMiddleware<T> =>
+  (next, { event }, eventProcessor) => {
+    switch (event.type) {
+      case 'start': {
+        eventProcessor.update('ids', (ids: ID[] = []) => {
+          ids.push((event as CustomEvent).detail.id);
+          return ids;
+        });
+        break;
+      }
+
+      case 'end': {
+        const { detail } = (event as CustomEvent);
+        if (detail) {
+          const { id } = detail;
+          eventProcessor.update('ids', (ids?: ID[]) =>
+            ids ? ids.filter((_id) => _id !== id) : undefined,
+          );
+        }
+        break;
+      }
+    }
+
     next();
   };
 

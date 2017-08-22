@@ -22,7 +22,7 @@ npm install --save eventprocessor
 
 ### Example
 ```javascript
-import { DragHandler } from 'eventprocessor';
+import DragHandler from 'eventprocessor/presets/draghandler';
 
 // Create event handler
 const dragHandler = new DragHandler();

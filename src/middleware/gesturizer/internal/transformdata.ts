@@ -15,11 +15,13 @@ class TransformData {
 
     let translateX = 0;
     let translateY = 0;
+    let scale = 1;
 
     // Compute average position (transform origin)
     pointers.forEach(({ detail }) => {
       translateX += detail.clientX;
       translateY += detail.clientY;
+      if (detail._scale) scale *= detail._scale;
     });
     translateX /= pointerCount;
     translateY /= pointerCount;
@@ -30,14 +32,14 @@ class TransformData {
       // Average y position
       translateY,
       // Average distance from transform origin
-      pointers.reduce(
+      ((pointers.reduce(
         (sum, { detail }) =>
           sum + Math.sqrt(
             (detail.clientX - translateX) ** 2
             + (detail.clientY - translateY) ** 2,
           ),
         0,
-      ) / pointerCount,
+      ) / pointerCount) || 1) * scale,
       // TODO: Rotation angle of all involved pointers
     );
   }

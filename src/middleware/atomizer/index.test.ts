@@ -1,5 +1,5 @@
 /**
- * @file Gesturizer entry point test suite
+ * @file Atomizer entry point test suite
  * @author Paul Brachmann
  * @license Copyright (c) 2017 Malpaux IoT All Rights Reserved.
  */

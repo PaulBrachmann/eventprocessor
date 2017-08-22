@@ -9,7 +9,7 @@
  * import the entire lib for coverage reporting
  */
 
-import EventProcessor, * as lib from './';
+import * as lib from './';
 
 describe('entry point', () => {
   it('should have exports', () => {
@@ -22,17 +22,5 @@ describe('entry point', () => {
     Object.keys(lib).forEach((key) => {
       expect((lib as { [key: string]: any })[key]).toBeTruthy();
     });
-  });
-});
-
-describe('drag handler', () => {
-  it('should be a valid event processor', () => {
-    expect(new lib.DragHandler()).toBeInstanceOf(EventProcessor);
-  });
-
-  it('should allow you to register callbacks', () => {
-    const dragHandler = new lib.DragHandler();
-    expect(dragHandler.on(undefined, () => {/**/})).toBe(dragHandler);
-    expect(dragHandler.on('type', () => {/**/})).toBe(dragHandler);
   });
 });

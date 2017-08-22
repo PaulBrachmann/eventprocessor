@@ -30,17 +30,17 @@ describe('transform data', () => {
 
   it('should generate transform data from an array of pointers', () => {
     const transformData = TransformData.fromPointers([
-      new Pointer('uuid', { clientX: 256, clientY: 64 }, 'mouse'),
+      new Pointer('uuid', { clientX: 256, clientY: 64, identifier: 'mouse', _scale: 1.2 }, 'mouse'),
     ]);
 
     expect(transformData.translateX).toBe(256);
     expect(transformData.translateY).toBe(64);
-    expect(transformData.scale).toBe(1);
+    expect(transformData.scale).toBe(1.2);
     expect(transformData.rotate2d).toBe(0);
 
     const transformData2 = TransformData.fromPointers([
-      new Pointer('uuid', { clientX: 0, clientY: 0 }, 'touch'),
-      new Pointer('uuid', { clientX: 128, clientY: 128 }, 'touch'),
+      new Pointer('uuid', { clientX: 0, clientY: 0, identifier: 'mouse' }, 'touch'),
+      new Pointer('uuid', { clientX: 128, clientY: 128, identifier: 'mouse' }, 'touch'),
     ]);
 
     expect(transformData2.translateX).toBe(64);

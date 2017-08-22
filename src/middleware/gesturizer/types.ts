@@ -6,7 +6,9 @@
  */
 
 import Gesture from './internal/gesture';
+import TransformData from './internal/transformdata';
 
+export { Gesture, TransformData };
 export interface GestureState {
   gestures: { [id: string]: Gesture, [id: number]: Gesture };
 }

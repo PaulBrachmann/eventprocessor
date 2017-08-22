@@ -16,9 +16,9 @@ import gesturizer, { createGestureEvent, filterPointers } from './gesturizer';
 describe('utils', () => {
   it('should create a filtered array of pointers', () => {
     const pointers = {
-      pointer: new Pointer('uuid', { clientX: 24, clientY: 0 }, 'touch'),
-      pointer2: new Pointer('uuid2', { clientX: 16, clientY: 64 }, 'touch'),
-      pointer3: new Pointer('uuid', { clientX: 256, clientY: 512 }, 'touch'),
+      pointer: new Pointer('uuid', { clientX: 24, clientY: 0, identifier: 't/0' }, 'touch'),
+      pointer2: new Pointer('uuid2', { clientX: 16, clientY: 64, identifier: 't/1' }, 'touch'),
+      pointer3: new Pointer('uuid', { clientX: 256, clientY: 512, identifier: 't/2' }, 'touch'),
     };
 
     const initialObjectValues = (Object as { [key: string]: any }).values;
@@ -44,11 +44,10 @@ describe('utils', () => {
 });
 
 describe('gesturizer', () => {
-
   const pointers: { [key: string]: Pointer<string> } = {
-    pointer: new Pointer('uuid', { clientX: 0, clientY: 0 }, 'touch'),
-    pointer2: new Pointer('uuid2', { clientX: 32, clientY: 8 }, 'touch'),
-    pointer3: new Pointer('uuid', { clientX: 128, clientY: 128 }, 'touch'),
+    pointer: new Pointer('uuid', { clientX: 0, clientY: 0, identifier: 't/0' }, 'touch'),
+    pointer2: new Pointer('uuid2', { clientX: 32, clientY: 8, identifier: 't/1' }, 'touch'),
+    pointer3: new Pointer('uuid', { clientX: 128, clientY: 128, identifier: 't/2' }, 'touch'),
   };
   const processor = new EventProcessor<PointerState<string> & GestureState>();
   let gesture: Gesture;
@@ -181,7 +180,11 @@ describe('gesturizer', () => {
   });
 
   it('should add a pointer to an existing gesture', () => {
-    pointers.pointer4 = new Pointer('uuid', { clientX: 64, clientY: 64 }, 'touch');
+    pointers.pointer4 = new Pointer(
+      'uuid',
+      { clientX: 64, clientY: 64, identifier: 't/0' },
+      'touch',
+    );
 
     expect(gesturizer()(
       next,
@@ -234,8 +237,8 @@ describe('gesturizer', () => {
   });
 
   it('should update a gesture', () => {
-    pointers.pointer.detail = { clientX: 64, clientY: 128 };
-    pointers.pointer3.detail = { clientX: 512, clientY: 256 };
+    pointers.pointer.detail = { clientX: 64, clientY: 128, identifier: 't/0' };
+    pointers.pointer3.detail = { clientX: 512, clientY: 256, identifier: 't/1' };
 
     expect(gesturizer()(
       next,

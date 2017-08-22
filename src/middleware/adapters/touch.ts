@@ -32,6 +32,7 @@ const touchAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
       const type = data.eventType;
 
       let pointers = eventProcessor.get('pointers');
+      const currentPointers = data.pointers || [];
 
       if (type === 'start') {
         // Get id from caller arguments
@@ -42,15 +43,19 @@ const touchAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
           forEachTouches((data.event as TouchEvent).changedTouches, (touch) => {
             if (!pointers) pointers = {};
 
+            const pointerId = `${pointerIdPrefix}${touch.identifier}`;
+
             // Create pointer
-            pointers[`${pointerIdPrefix}${touch.identifier}`] = new Pointer(
+            const pointer = new Pointer(
               id,
               {
-                clientX: touch.clientX,
-                clientY: touch.clientY,
+                ...touch,
+                identifier: pointerId,
               },
               data.device,
             );
+
+            pointers[pointerId] = pointer;
           });
 
           // Write id to context
@@ -66,17 +71,17 @@ const touchAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
 
         // Iterate changed touches
         forEachTouches((data.event as TouchEvent).changedTouches, (touch) => {
+          const pointerId = `${pointerIdPrefix}${touch.identifier}`;
+
           // Get registered pointer (if any)
-          const pointer = (pointers as { [key: string]: Pointer<ID> })[
-            `${pointerIdPrefix}${touch.identifier}`
-          ];
+          const pointer = (pointers as { [key: string]: Pointer<ID> })[pointerId];
 
           if (pointer) {
             if (type === 'move') {
               // Update pointer
               pointer.detail = {
-                clientX: touch.clientX,
-                clientY: touch.clientY,
+                ...touch,
+                identifier: pointerId,
               };
             }
 
@@ -85,15 +90,16 @@ const touchAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
 
             if (type === 'end') {
               // Delete pointer
-              delete (pointers as { [key: string]: Pointer<ID> })[
-                `${pointerIdPrefix}${touch.identifier}`
-              ];
+              delete (pointers as { [key: string]: Pointer<ID> })[pointerId];
             }
           }
         });
 
         // Write ids to context
         data.ids = Object.keys(ids);
+
+        // Write pointers to context
+        data.pointers = currentPointers;
       }
     }
 

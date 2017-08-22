@@ -7,6 +7,7 @@
 
 import Pointer from './internal/pointer';
 
+export { Pointer };
 export interface PointerState<ID> {
   pointers: { [pointerId: string]: Pointer<ID> };
 }

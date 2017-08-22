@@ -35,14 +35,17 @@ const mouseAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
           pointer = new Pointer(
             id,
             {
-              clientX: (event as MouseEvent).clientX,
-              clientY: (event as MouseEvent).clientY,
+              ...(event as MouseEvent),
+              identifier: pointerId,
             },
             data.device,
           );
 
           // Write id to context
           data.ids = [id];
+
+          // Write pointer to context
+          data.pointers = [pointer];
         }
       } else if (pointers) {
         // Get registered pointer (if any)
@@ -53,13 +56,16 @@ const mouseAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
             const { event } = data;
             // Update pointer
             pointer.detail = {
-              clientX: (event as MouseEvent).clientX,
-              clientY: (event as MouseEvent).clientY,
+              ...(event as MouseEvent),
+              identifier: pointerId,
             };
           }
 
           // Get id & write to context
           data.ids = [pointer.id];
+
+          // Write pointer to context
+          data.pointers = [pointer];
 
           if (type === 'end') {
             // Prevent write
