@@ -35,7 +35,8 @@ const mouseAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
           pointer = new Pointer(
             id,
             {
-              ...(event as MouseEvent),
+              clientX: (event as MouseEvent).clientX,
+              clientY: (event as MouseEvent).clientY,
               identifier: pointerId,
             },
             data.device,
@@ -56,7 +57,8 @@ const mouseAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
             const { event } = data;
             // Update pointer
             pointer.detail = {
-              ...(event as MouseEvent),
+              clientX: (event as MouseEvent).clientX,
+              clientY: (event as MouseEvent).clientY,
               identifier: pointerId,
             };
           }
