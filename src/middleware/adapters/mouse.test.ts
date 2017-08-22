@@ -77,7 +77,12 @@ describe('mouse adapter', () => {
 
     pointer = new Pointer(
       'uuid',
-      { clientX: 32, clientY: 24, identifier: 'mouse' },
+      {
+        clientX: 32,
+        clientY: 24,
+        event: new MouseEvent('mousedown', { clientX: 32, clientY: 24 }),
+        identifier: 'mouse',
+      },
       'mouse',
     );
     expect(processor.get('pointers')).toEqual({ mouse: pointer });
@@ -99,6 +104,7 @@ describe('mouse adapter', () => {
     pointer.detail = {
       clientX: 64,
       clientY: 32,
+      event: new MouseEvent('mousemove', { clientX: 64, clientY: 32 }),
       identifier: 'mouse',
     };
     expect(processor.get('pointers')).toEqual({ mouse: pointer });

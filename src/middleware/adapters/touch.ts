@@ -51,9 +51,10 @@ const touchAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
               {
                 clientX: touch.clientX,
                 clientY: touch.clientY,
+                event: touch,
                 identifier: pointerId,
               },
-              data.device,
+              'touch',
             );
 
             pointers[pointerId] = pointer;
@@ -83,6 +84,7 @@ const touchAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
               pointer.detail = {
                 clientX: touch.clientX,
                 clientY: touch.clientY,
+                event: touch,
                 identifier: pointerId,
               };
             }

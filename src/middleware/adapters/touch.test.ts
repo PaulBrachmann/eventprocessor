@@ -94,8 +94,16 @@ describe.only('touch adapter', () => {
     )).toBe(undefined);
     expect(next).toHaveBeenCalledTimes(1);
 
-    pointer = new Pointer('uuid', { clientX: 0, clientY: 0, identifier: 't/0' }, 'touch');
-    pointer2 = new Pointer('uuid', { clientX: 64, clientY: 64, identifier: 't/1' }, 'touch');
+    pointer = new Pointer(
+      'uuid',
+      { clientX: 0, clientY: 0, event: createTouch(0, 0, 0), identifier: 't/0' },
+      'touch',
+    );
+    pointer2 = new Pointer(
+      'uuid',
+      { clientX: 64, clientY: 64, event: createTouch(1, 64, 64), identifier: 't/1' },
+      'touch',
+    );
     expect(processor.get('pointers')).toEqual({ 't/0': pointer, 't/1': pointer2 });
   });
 
@@ -112,8 +120,18 @@ describe.only('touch adapter', () => {
     )).toBe(undefined);
     expect(next).toHaveBeenCalledTimes(1);
 
-    pointer.detail = { clientX: 64, clientY: 16, identifier: 't/0' };
-    pointer2.detail = { clientX: 32, clientY: 24, identifier: 't/1' };
+    pointer.detail = {
+      clientX: 64,
+      clientY: 16,
+      event: createTouch(0, 64, 16),
+      identifier: 't/0',
+    };
+    pointer2.detail = {
+      clientX: 32,
+      clientY: 24,
+      event: createTouch(1, 32, 24),
+      identifier: 't/1',
+    };
     expect(processor.get('pointers')).toEqual({ 't/0': pointer, 't/1': pointer2 });
   });
 

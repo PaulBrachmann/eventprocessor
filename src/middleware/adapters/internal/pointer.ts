@@ -5,10 +5,13 @@
  * @license Copyright 2017 Unithing All Rights Reserved.
  */
 
+import { EventLike } from '../../../types';
+
 export interface PointerDetail {
   _scale?: number;
   clientX: number;
   clientY: number;
+  event?: EventLike | Touch;
   identifier: string;
   [prop: string]: any;
 }
