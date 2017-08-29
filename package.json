@@ -1,6 +1,6 @@
 {
   "name": "eventprocessor",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A middleware-based event-handling system",
   "keywords": [],
   "homepage": "https://github.com/Malpaux/eventprocessor#readme",
