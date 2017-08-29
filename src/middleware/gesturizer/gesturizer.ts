@@ -32,6 +32,7 @@ export const createGestureEvent = <ID>(type: string, gesture: Gesture, id: ID) =
       context: gesture.context,
       id,
       offset: gesture.getOffset(),
+      origin: gesture.origin,
     },
   });
 

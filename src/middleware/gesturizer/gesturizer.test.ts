@@ -39,7 +39,12 @@ describe('utils', () => {
     const gesture = new Gesture();
     const event = createGestureEvent('start', gesture, 'uuid');
     expect(event.type).toBe('start');
-    expect(event.detail).toEqual({ context: {}, id: 'uuid', offset: gesture.getOffset() });
+    expect(event.detail).toEqual({
+      context: {},
+      id: 'uuid',
+      offset: gesture.getOffset(),
+      origin: gesture.origin,
+    });
   });
 });
 

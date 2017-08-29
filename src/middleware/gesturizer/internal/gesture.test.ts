@@ -10,7 +10,7 @@ import TransformData from './transformdata';
 describe('gesture', () => {
   it('should create a new gesture', () => {
     const gesture = new Gesture();
-    expect(gesture.initial).toBeInstanceOf(TransformData);
+    expect(gesture.origin).toBeInstanceOf(TransformData);
     expect(gesture.context).toEqual({});
     expect(gesture.current).toBeInstanceOf(TransformData);
     expect(gesture.offset).toBeInstanceOf(TransformData);
@@ -41,10 +41,10 @@ describe('gesture', () => {
       .setPointer(new TransformData(128, 128, 32, 0));
 
     gesture.rebase(new TransformData(128, 256, 64, 0));
-    expect(gesture.initial.translateX).toBe(128);
-    expect(gesture.initial.translateY).toBe(256);
-    expect(gesture.initial.scale).toBe(64);
-    expect(gesture.initial.rotate2d).toBe(0);
+    expect(gesture.origin.translateX).toBe(128);
+    expect(gesture.origin.translateY).toBe(256);
+    expect(gesture.origin.scale).toBe(64);
+    expect(gesture.origin.rotate2d).toBe(0);
     expect(gesture.offset.translateX).toBe(0);
     expect(gesture.offset.translateY).toBe(0);
     expect(gesture.offset.scale).toBe(1);
@@ -57,10 +57,10 @@ describe('gesture', () => {
     expect(transformData.rotate2d).toBe(0);
 
     gesture.rebase(new TransformData(64, 0, 0, 23));
-    expect(gesture.initial.translateX).toBe(64);
-    expect(gesture.initial.translateY).toBe(0);
-    expect(gesture.initial.scale).toBe(1);
-    expect(gesture.initial.rotate2d).toBe(23);
+    expect(gesture.origin.translateX).toBe(64);
+    expect(gesture.origin.translateY).toBe(0);
+    expect(gesture.origin.scale).toBe(1);
+    expect(gesture.origin.rotate2d).toBe(23);
     expect(gesture.offset.translateX).toBe(-64);
     expect(gesture.offset.translateY).toBe(-256);
     expect(gesture.offset.scale).toBe(1 / 64);

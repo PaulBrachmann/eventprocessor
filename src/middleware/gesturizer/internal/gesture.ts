@@ -16,16 +16,16 @@ class Gesture {
 
   constructor(
     /** Initial pointer transform data */
-    public initial: TransformData = new TransformData(),
+    public origin: TransformData = new TransformData(),
     /** Gesture context (to store arbitrary data related to the gesture) */
     public context: { [key: string]: any } = {},
   ) {
-    this.current.set(initial);
+    this.current.set(origin);
   }
 
   /** Get the current offset */
   public getOffset(): TransformData {
-    return this.initial.clone().invert()
+    return this.origin.clone().invert()
       // Compute current offset
       .merge(this.current)
       // Static offset
@@ -33,12 +33,12 @@ class Gesture {
   }
 
   /** Replace the initial transform data, preserve transforms */
-  public rebase(initial: TransformData): Gesture {
+  public rebase(origin: TransformData): Gesture {
     // Compute new offset
-    this.offset.merge(this.initial.invert().merge(initial));
+    this.offset.merge(this.origin.invert().merge(origin));
 
     // Replace initial transform data
-    this.initial = initial;
+    this.origin = origin;
 
     return this;
   }
