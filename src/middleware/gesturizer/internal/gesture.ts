@@ -35,10 +35,13 @@ class Gesture {
   /** Replace the initial transform data, preserve transforms */
   public rebase(origin: TransformData): Gesture {
     // Compute new offset
-    this.offset.merge(this.origin.invert().merge(origin));
+    this.offset.set(this.getOffset());
 
     // Replace initial transform data
     this.origin = origin;
+
+    // Set new pointer position
+    this.setPointer(origin);
 
     return this;
   }

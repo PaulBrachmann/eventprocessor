@@ -7,7 +7,7 @@
 import Gesture from './gesture';
 import TransformData from './transformdata';
 
-describe('gesture', () => {
+describe.only('gesture', () => {
   it('should create a new gesture', () => {
     const gesture = new Gesture();
     expect(gesture.origin).toBeInstanceOf(TransformData);
@@ -36,40 +36,40 @@ describe('gesture', () => {
     expect(gesture2).toBe(gesture);
   });
 
-  it('should rebase a gesture', () => {
-    const gesture = new Gesture(new TransformData(128, 256, 64, 0))
-      .setPointer(new TransformData(128, 128, 32, 0));
+  it.only('should rebase a gesture', () => {
+    const gesture = new Gesture(new TransformData(128, 256, 1, 0))
+      .setPointer(new TransformData(128, 128, 1, 0));
 
-    gesture.rebase(new TransformData(128, 256, 64, 0));
+    gesture.rebase(new TransformData(128, 256, 1, 0));
     expect(gesture.origin.translateX).toBe(128);
     expect(gesture.origin.translateY).toBe(256);
-    expect(gesture.origin.scale).toBe(64);
+    expect(gesture.origin.scale).toBe(1);
     expect(gesture.origin.rotate2d).toBe(0);
     expect(gesture.offset.translateX).toBe(0);
-    expect(gesture.offset.translateY).toBe(0);
+    expect(gesture.offset.translateY).toBe(-128);
     expect(gesture.offset.scale).toBe(1);
     expect(gesture.offset.rotate2d).toBe(0);
 
     const transformData = gesture.getOffset();
     expect(transformData.translateX).toBe(0);
     expect(transformData.translateY).toBe(-128);
-    expect(transformData.scale).toBe(0.5);
+    expect(transformData.scale).toBe(1);
     expect(transformData.rotate2d).toBe(0);
 
-    gesture.rebase(new TransformData(64, 0, 0, 23));
+    gesture.rebase(new TransformData(64, 0, 256, 23));
     expect(gesture.origin.translateX).toBe(64);
     expect(gesture.origin.translateY).toBe(0);
-    expect(gesture.origin.scale).toBe(1);
+    expect(gesture.origin.scale).toBe(256);
     expect(gesture.origin.rotate2d).toBe(23);
-    expect(gesture.offset.translateX).toBe(-64);
-    expect(gesture.offset.translateY).toBe(-256);
-    expect(gesture.offset.scale).toBe(1 / 64);
-    expect(gesture.offset.rotate2d).toBe(23);
+    expect(gesture.offset.translateX).toBe(0);
+    expect(gesture.offset.translateY).toBe(-128);
+    expect(gesture.offset.scale).toBe(1);
+    expect(gesture.offset.rotate2d).toBe(0);
 
     const transformData2 = gesture.getOffset();
     expect(transformData2.translateX).toBe(0);
     expect(transformData2.translateY).toBe(-128);
-    expect(transformData2.scale).toBe(0.5);
+    expect(transformData2.scale).toBe(1);
     expect(transformData2.rotate2d).toBe(0);
   });
 });
