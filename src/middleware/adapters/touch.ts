@@ -58,6 +58,7 @@ const touchAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
             );
 
             pointers[pointerId] = pointer;
+            currentPointers.push(pointer);
           });
 
           // Write id to context
@@ -77,6 +78,7 @@ const touchAdapter = <ID, T extends PointerState<ID>>(): EventMiddleware<T> =>
 
           // Get registered pointer (if any)
           const pointer = (pointers as { [key: string]: Pointer<ID> })[pointerId];
+          currentPointers.push(pointer);
 
           if (pointer) {
             if (type === 'move') {
