@@ -1,102 +1,121 @@
-/**
- * Event Handler Middleware
- * @module eventprocessor/middleware/utils
- * @author Paul Brachmann
- * @license Copyright 2017 Unithing All Rights Reserved.
- */
-
-import { EventMiddleware } from '../eventprocessor';
-import { EventLike } from '../types';
-
-/** Classification middleware - adds ```data.device``` and ```data.eventType``` fields */
-export const classify = <T>(
-  eventMap: { [type: string]: string[] },
-): EventMiddleware<T> =>
-  (next, data) => {
-    const type = eventMap[data.event.type];
-
-    if (type) {
-      data.device = type[0];
-      data.eventType = type[1];
-    }
-
-    next();
-  };
+import { BreakException } from "../eventprocessor";
+import {
+  EventData,
+  EventLike,
+  EventMiddleware,
+  IEventProcessor,
+} from "../types";
+import { DeviceType, EventType, RichMiddleware } from "./types";
 
 /** Default mouse/touch event map */
-const defaultEventMap = {
-  DOMMouseScroll: ['wheel', 'wheel'],
-  mousedown: ['mouse', 'start'],
-  mousemove: ['mouse', 'move'],
-  mouseup: ['mouse', 'end'],
-  mousewheel: ['wheel', 'wheel'],
-  touchend: ['touch', 'end'],
-  touchmove: ['touch', 'move'],
-  touchstart: ['touch', 'start'],
-  wheel: ['wheel', 'wheel'],
+const defaultEventMap: {
+  [type: string]: [DeviceType, EventType];
+} = {
+  DOMMouseScroll: ["wheel", "wheel"],
+  keydown: ["key", "down"],
+  keypress: ["key", "press"],
+  keyup: ["key", "up"],
+  mousedown: ["mouse", "start"],
+  mousemove: ["mouse", "move"],
+  mouseup: ["mouse", "end"],
+  mousewheel: ["wheel", "wheel"],
+  touchend: ["touch", "end"],
+  touchmove: ["touch", "move"],
+  touchstart: ["touch", "start"],
+  wheel: ["wheel", "wheel"],
 };
 export { defaultEventMap as eventMap };
 
-/** Event logging middleware */
-export const log = <T>(unknown?: boolean, production?: boolean): EventMiddleware<T> =>
-  (next, { event, ids }) => {
-    if ((unknown || ids !== undefined) && (production || process.env.NODE_ENV !== 'production')) {
-      console.log(event); // tslint:disable-line no-console
-    }
-    next();
-  };
+/**
+ * Classification middleware.
+ * Adds `data.device` and `data.eventType` fields.
+ *
+ * @param eventMap An object mapping from `event.type` to `[deviceName, eventClass]`
+ */
+export const classify = <T>(
+  eventMap: {
+    [type: string]: [DeviceType, EventType];
+  } = defaultEventMap,
+): RichMiddleware<T> => (data) => {
+  const type = eventMap[data.event.type];
 
-/** Prevent default middleware */
-export const preventDefault = <T>(unknown?: boolean): EventMiddleware<T> =>
-  (next, { event, ids }) => {
-    if ((unknown || ids !== undefined) && event.cancelable) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    next();
-  };
+  if (type) {
+    [data.device, data.eventType] = type;
+  }
+};
 
-/** Id reducer middleware */
-export const reduceIds = <ID, T extends { ids: ID[] }>(): EventMiddleware<T> =>
-  (next, { event }, eventProcessor) => {
-    switch (event.type) {
-      case 'start': {
-        eventProcessor.update('ids', (ids: ID[] = []) => {
-          ids.push((event as CustomEvent).detail.id);
-          return ids;
-        });
-        break;
-      }
+/**
+ * Event logging middleware.
+ *
+ * @param unknown Should events without associated id(s) be printed?
+ * @param production Should events be printed in production?
+ */
+export const log = (
+  unknown?: boolean,
+  production?: boolean,
+): EventMiddleware => ({ event, ids }) => {
+  if (
+    (unknown || ids !== undefined) &&
+    (production || process.env.NODE_ENV !== "production")
+  ) {
+    // eslint-disable-next-line no-console
+    console.log(event);
+  }
+};
 
-      case 'end': {
-        const { detail } = (event as CustomEvent);
-        if (detail) {
-          const { id } = detail;
-          eventProcessor.update('ids', (ids?: ID[]) =>
-            ids ? ids.filter((_id) => _id !== id) : undefined,
-          );
-        }
-        break;
-      }
-    }
+/**
+ * Prevent default middleware.
+ *
+ * @param unknown Should events without associated id(s) be handled?
+ */
+export const preventDefault = (unknown?: boolean): EventMiddleware => ({
+  event,
+  ids,
+}) => {
+  if ((unknown || ids !== undefined) && event.cancelable) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+};
 
-    next();
-  };
+/**
+ * Filter middleware.
+ * Terminates the middleware chain if the `predicate` returns false for the current event.
+ *
+ * @param predicate
+ */
+export const filter = <
+  D extends EventData = EventData,
+  T = { [key: string]: any }
+>(
+  predicate: (data: D, processor: IEventProcessor<D, T>) => boolean,
+): EventMiddleware<D, T> => (data, processor) => {
+  if (!predicate(data, processor)) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw new BreakException();
+  }
+};
 
-/* Side effects middleware */
+/**
+ * Side effects middleware.
+ *
+ * @param callback The side effect to be called
+ * @param eventType An event type (or array of types) to filter events that trigger the `callback`
+ */
 export const sideFx = <T>(
   callback: (event: EventLike) => void,
   eventType?: string | string[],
-): EventMiddleware<T> =>
-  (next, { event }) => {
-    if (eventType) {
-      const { type } = event;
+): EventMiddleware<any, T> => (data) => {
+  if (eventType) {
+    const { type } = data.event;
 
-      if (!(eventType === type
-        || Array.isArray(eventType) && ~eventType.indexOf(event.type))
-      ) return next();
+    if (
+      eventType === type ||
+      (Array.isArray(eventType) && ~eventType.indexOf(type))
+    ) {
+      callback({ ...data });
     }
-
-    callback(event);
-    next();
-  };
+  } else {
+    callback({ ...data });
+  }
+};

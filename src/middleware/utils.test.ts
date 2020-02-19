@@ -1,202 +1,169 @@
-/**
- * @file Utility middleware test suite
- * @author Paul Brachmann
- * @license Copyright (c) 2017 Malpaux IoT All Rights Reserved.
- */
+import EventProcessor, { BreakException } from "../eventprocessor";
+import { EventData } from "../types";
+import { classify, filter, log, preventDefault, sideFx } from "./utils";
 
-import EventProcessor, { EventData } from '../eventprocessor';
-import { classify, log, preventDefault, reduceIds, sideFx } from './utils';
+/* eslint-disable no-console */
 
-describe('middleware', () => {
-  it('should classify events', () => {
-    const processor = new EventProcessor();
-    const next = jest.fn();
-    const classifier = classify({ type: ['device', 'action'] });
+let processor: EventProcessor;
 
-    const data: EventData = { event: new Event('type'), args: [] };
-    expect(classifier(next, data, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(data.device).toBe('device');
-    expect(data.eventType).toBe('action');
+beforeEach(() => {
+  processor = new EventProcessor();
+});
 
-    // Test unknown event type
-    const data2: EventData = { event: new Event('undef'), args: [] };
-    expect(classifier(next, data2, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(2);
+describe("classify", () => {
+  const classifier = classify({ type: ["mouse", "start"] });
+
+  it("should classify events", () => {
+    const data: EventData = { event: new Event("type"), args: [] };
+    expect(classifier(data, processor)).toBe(undefined);
+    expect(data.device).toBe("mouse");
+    expect(data.eventType).toBe("start");
+  });
+
+  it("should not classify unknown events", () => {
+    const data2: EventData = { event: new Event("undef"), args: [] };
+    expect(classifier(data2, processor)).toBe(undefined);
     expect(data2.device).toBe(undefined);
     expect(data2.eventType).toBe(undefined);
   });
+});
 
-  it('should log events', () => {
-    const processor = new EventProcessor();
-    const next = jest.fn();
+describe("log", () => {
+  const initialConsoleLog = console.log;
 
-    const data: EventData = { event: new Event('type'), args: [] };
-    const data2: EventData = { event: new Event('type'), args: ['uuid'], ids: ['uuid'] };
+  const data: EventData = { event: new Event("type"), args: [] };
+  const data2: EventData = {
+    event: new Event("type"),
+    args: ["uuid"],
+    ids: ["uuid"],
+  };
 
-    const initialConsoleLog = console.log;
+  beforeEach(() => {
     console.log = jest.fn();
+  });
 
-    expect(log()(next, data, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(console.log).toHaveBeenCalledTimes(0);
-
-    expect(log()(next, data2, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(2);
-    expect(console.log).toHaveBeenCalledTimes(1);
-
-    expect(log(true)(next, data, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(3);
-    expect(console.log).toHaveBeenCalledTimes(2);
-
-    expect(log(true)(next, data2, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(4);
-    expect(console.log).toHaveBeenCalledTimes(3);
-
-    // TODO: Test production environment
-
+  afterAll(() => {
     console.log = initialConsoleLog;
   });
 
-  it('should prevent the default event action', () => {
-    const processor = new EventProcessor();
-    const next = jest.fn();
+  it("should only log known events", () => {
+    expect(log()(data, processor)).toBe(undefined);
+    expect(console.log).toHaveBeenCalledTimes(0);
 
-    const event = new CustomEvent('type', {
-      cancelable: true,
-    });
+    expect(log()(data2, processor)).toBe(undefined);
+    expect(console.log).toHaveBeenCalledTimes(1);
+  });
+
+  it("should also log unknown events", () => {
+    expect(log(true)(data, processor)).toBe(undefined);
+    expect(console.log).toHaveBeenCalledTimes(1);
+
+    expect(log(true)(data2, processor)).toBe(undefined);
+    expect(console.log).toHaveBeenCalledTimes(2);
+  });
+
+  // TODO: Test production environment
+});
+
+describe("preventDefault", () => {
+  /* eslint-disable @typescript-eslint/unbound-method */
+  const event = new CustomEvent("type", {
+    cancelable: true,
+  });
+
+  beforeEach(() => {
     event.preventDefault = jest.fn();
     event.stopPropagation = jest.fn();
-
-    expect(preventDefault(true)(next, { event, args: [] }, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
-
-    expect(preventDefault()(next, { event, args: [] }, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(2);
-    expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
-
-    expect(preventDefault()(next, { event, args: [], ids: ['uuid'] }, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(3);
-    expect(event.preventDefault).toHaveBeenCalledTimes(2);
-    expect(event.stopPropagation).toHaveBeenCalledTimes(2);
   });
 
-  it('should reduce the active ids', () => {
-    const processor = new EventProcessor<{ ids: string[] }>();
-    const next = jest.fn();
-
-    expect(processor.get('ids')).toBe(undefined);
-
-    // Test removing an id on initial state (ids = undefined)
-    expect(reduceIds()(
-      next,
-      { event: new CustomEvent('end', { detail: { id: 'uuid' } }), args: [] },
-      processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(processor.get('ids')).toBe(undefined);
-
-    // Test adding an id
-    expect(reduceIds()(
-      next,
-      { event: new CustomEvent('start', { detail: { id: 'uuid' } }), args: [] },
-      processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(2);
-    expect(processor.get('ids')).toEqual(['uuid']);
-
-    expect(reduceIds()(
-      next,
-      { event: new CustomEvent('start', { detail: { id: 'uuid2' } }), args: [] },
-      processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(3);
-    expect(processor.get('ids')).toEqual(['uuid', 'uuid2']);
-
-    // Test unrecognized eventType
-    expect(reduceIds()(
-      next,
-      { event: new CustomEvent('move', { detail: { id: 'uuid2' } }), args: [] },
-      processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(4);
-    expect(processor.get('ids')).toEqual(['uuid', 'uuid2']);
-
-    // Test adding an id
-    expect(reduceIds()(
-      next,
-      { event: new CustomEvent('start', { detail: { id: 'uuid' } }), args: [] },
-      processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(5);
-    expect(processor.get('ids')).toEqual(['uuid', 'uuid2', 'uuid']);
-
-    // Test removing an id
-    expect(reduceIds()(
-      next,
-      { event: new CustomEvent('end', { detail: { id: 'uuid2' } }), args: [] },
-      processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(6);
-    expect(processor.get('ids')).toEqual(['uuid', 'uuid']);
-
-    // Test id not sepcified
-    expect(reduceIds()(
-      next,
-      { event: new CustomEvent('end'), args: [] },
-      processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(7);
-    expect(processor.get('ids')).toEqual(['uuid', 'uuid']);
-
-    // Test removing multiple ids
-    expect(reduceIds()(
-      next,
-      { event: new CustomEvent('end', { detail: { id: 'uuid' } }), args: [] },
-      processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(8);
-    expect(processor.get('ids')).toEqual([]);
+  it("should handle all events", () => {
+    expect(preventDefault(true)({ event, args: [] }, processor)).toBe(
+      undefined,
+    );
+    expect(event.preventDefault).toHaveBeenCalledTimes(1);
+    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
   });
 
-  it('should execute side effects', () => {
-    const processor = new EventProcessor();
-    const next = jest.fn();
+  it("should not handle events without associated id(s)", () => {
+    expect(preventDefault()({ event, args: [] }, processor)).toBe(undefined);
+    expect(event.preventDefault).toHaveBeenCalledTimes(0);
+    expect(event.stopPropagation).toHaveBeenCalledTimes(0);
+  });
 
-    const callback = jest.fn();
+  it("should handle events with associated id(s)", () => {
+    expect(
+      preventDefault()({ event, args: [], ids: ["uuid"] }, processor),
+    ).toBe(undefined);
+    expect(event.preventDefault).toHaveBeenCalledTimes(1);
+    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+  });
+  /* eslint-enable @typescript-eslint/unbound-method */
+});
 
-    const event = new Event('type');
-    expect(sideFx(callback)(next, { event, args: [] }, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith(event);
+describe("filter", () => {
+  it("should not abort if the predicate holds", () => {
+    expect(() => {
+      filter((data) => data.propagate)(
+        { event: new Event("type"), args: [], propagate: true },
+        processor,
+      );
+    }).not.toThrow();
+  });
 
+  it("should abort if the predicate does not hold", () => {
+    expect(() => {
+      filter((data) => !data.abort)(
+        { event: new Event("type"), args: [], abort: true },
+        processor,
+      );
+    }).toThrowError(BreakException);
+  });
+});
+
+describe("sideFx", () => {
+  const callback = jest.fn();
+
+  const event = new Event("type");
+  const data = { event, args: [] };
+
+  beforeEach(() => {
     jest.clearAllMocks();
-    expect(sideFx(callback, 'type')(next, { event, args: [] }, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith(event);
+  });
 
-    jest.clearAllMocks();
-    expect(sideFx(callback, 'otherType')(next, { event, args: [] }, processor)).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
+  it("should execute side effects for all events", () => {
+    expect(sideFx(callback)(data, processor)).toBe(undefined);
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(data);
+  });
+
+  it("should execute side effects for a given event type", () => {
+    expect(sideFx(callback, "type")(data, processor)).toBe(undefined);
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(data);
+  });
+
+  it("should not execute side effects for a different event type than given", () => {
+    expect(sideFx(callback, "otherType")(data, processor)).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(0);
+  });
 
-    jest.clearAllMocks();
-    expect(sideFx(callback, ['type', 'type2'])(
-      next, { event: new Event('type2'), args: [] }, processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
+  it("should execute side effects for a listed event type", () => {
+    expect(
+      sideFx(callback, ["type", "type2"])(
+        { event: new Event("type2"), args: [] },
+        processor,
+      ),
+    ).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(1);
+  });
 
-    jest.clearAllMocks();
-    expect(sideFx(callback, ['type', 'type2'])(
-      next, { event: new Event('type3'), args: [] }, processor,
-    )).toBe(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
+  it("should not execute side effects for an unlisted event type", () => {
+    expect(
+      sideFx(callback, ["type", "type2"])(
+        { event: new Event("type3"), args: [] },
+        processor,
+      ),
+    ).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(0);
   });
 });

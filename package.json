@@ -1,64 +1,70 @@
 {
   "name": "eventprocessor",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "description": "A middleware-based event-handling system",
   "keywords": [],
-  "homepage": "https://github.com/Malpaux/eventprocessor#readme",
+  "homepage": "https://github.com/PaulBrachmann/eventprocessor#readme",
   "bugs": {
-    "url": "https://github.com/Malpaux/eventprocessor/issues"
+    "url": "https://github.com/PaulBrachmann/eventprocessor/issues"
   },
   "license": "BSD-3-Clause",
-  "author": "Malpaux (malpaux.com)",
+  "author": "Paul Brachmann",
   "contributors": [
     {
       "name": "Paul Brachmann",
-      "email": "paul.brachmann@malpaux.com"
+      "email": "mail@paulbrachmann.com"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Malpaux/eventprocessor.git"
+    "url": "git+https://github.com/PaulBrachmann/eventprocessor.git"
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.prod.json -d",
     "clean": "rimraf dist",
-    "lint": "tslint -p tsconfig.json",
-    "lint:fix": "tslint -p tsconfig.json --fix",
+    "format": "run-p format:*",
+    "format:js": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format:json": "prettier --write {.,**}/*.json",
+    "lint": "run-p lint:*",
+    "lint:js": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "compile": "tsc --noEmit -p . --pretty",
     "test": "jest --env=jsdom",
-    "test:coverage": "jest --env=jsdom --coverage"
+    "coverage": "jest --env=jsdom --coverage"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn compile && lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ],
+    "src/**/*.{json}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^20.0.2",
+    "@types/jest": "^25.1.2",
     "@types/node": "^8.0.20",
-    "jest": "^20.0.4",
-    "rimraf": "^2.6.1",
-    "ts-jest": "^20.0.7",
-    "tslint": "^5.5.0",
-    "tslint-config-airbnb": "^5.2.1",
-    "typescript": "^2.4.1"
+    "@typescript-eslint/eslint-plugin": "2.19.0",
+    "@typescript-eslint/parser": "^2.20.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^7.0.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^4.2.3",
+    "jest": "^25.1.0",
+    "lint-staged": "^10.0.7",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^1.19.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.7.5"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json"
-    ],
-    "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    },
-    "mapCoverage": true,
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "<rootDir>/src/grammar/"
-    ],
-    "roots": [
-      "<rootDir>/src/"
-    ],
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(ts|js)$",
-    "testPathIgnorePatterns": [
-      "<rootDir>/(build|dist|docs|node_modules)/"
-    ],
-    "testEnvironment": "node"
+    "preset": "ts-jest"
   }
 }

@@ -1,77 +1,72 @@
-/**
- * Event Processor
- * @module eventprocessor/eventprocessor
- * @author Paul Brachmann
- * @license Copyright 2017 Unithing All Rights Reserved.
- */
+/* eslint-disable max-classes-per-file */
+import {
+  EventData,
+  EventLike,
+  EventMiddleware,
+  MiddlewareChain,
+  IEventProcessor,
+} from "./types";
+import { flattenArray } from "./utils";
 
-import { EventLike } from './types';
-import { composeMiddleware, Next } from './utils';
+export class BreakException implements Error {
+  public message = "";
 
-export { Next };
-/** Event processor data interface (passed to middleware) */
-export interface EventData {
-  args: any[];
-  event: EventLike;
-  [key: string]: any;
+  public name = "BreakException";
 }
-/** Event processor middleware function signature */
-export type EventMiddleware<T> = (
-  next: Next,
-  data: EventData,
-  eventProcessor: EventProcessor<T>,
-) => void;
 
-/** Event Processor */
-export default class EventProcessor<T extends {} = { [key: string]: any }> {
-  /** The middleware hain */
-  protected middleware: EventMiddleware<T>[] = [];
+/** Event Processor. */
+export default class EventProcessor<
+  D extends EventData = EventData,
+  T extends {} = { [key: string]: any }
+> implements IEventProcessor<D, T> {
+  /** The middleware chain. */
+  protected middlewares: EventMiddleware<D, T>[] = [];
 
-  /** Create a new event processor */
   constructor(
     /** The event processor's state */
-    protected state: Partial<T> = (({} as any) as T),
-  ) {
-    this.dispatch = this.dispatch.bind(this);
-  }
+    protected state: Partial<T> = {},
+  ) {}
 
-  /** Delete a value from the event processor's state */
   public delete<K extends keyof T>(key: K) {
     delete this.state[key];
     return this;
   }
 
-  /** Trigger an event chain */
-  public dispatch(event: EventLike, ...args: any[]) {
+  public dispatch = (event: EventLike, ...args: any[]) => {
     try {
-      composeMiddleware<any>({ event, args }, this)(...this.middleware)();
+      const eventData = { event, args };
+      this.middlewares.forEach((middleware) => {
+        middleware(eventData as any, this as any);
+      });
     } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Error in event handling chain: ', error); // tslint:disable-line no-console
+      if (
+        !(error instanceof BreakException) &&
+        process.env.NODE_ENV !== "production"
+      ) {
+        // eslint-disable-next-line no-console
+        console.error("Error in event handling chain: ", error);
       }
     }
-  }
+    return this;
+  };
 
-  /** Get a value from the event procesor's state */
   public get<K extends keyof T>(key: K): T[K] | undefined {
     return this.state[key];
   }
 
-  /** Set a value in the event processor's state */
   public set<K extends keyof T>(key: K, value: any) {
     this.state[key] = value;
     return this;
   }
 
-  /** Update a value in the event processor's state */
   public update<K extends keyof T>(key: K, updater: (value: any) => any) {
     this.state[key] = updater(this.state[key]);
     return this;
   }
 
-  /** Apply middleware */
-  public use(...middlewares: EventMiddleware<T>[]) {
-    this.middleware.push(...middlewares);
+  /** Applies middleware. */
+  public use(...middlewares: MiddlewareChain<EventMiddleware<D, T>>) {
+    this.middlewares.push(...flattenArray<EventMiddleware<D, T>>(middlewares));
     return this;
   }
 }
