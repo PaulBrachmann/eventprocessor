@@ -10,7 +10,7 @@ export enum MouseInteractionType {
 }
 
 /** Mouse mapper, generates actions from mouse events. */
-const mouseMapper = (
+const mapMouse = (
   map: InteractionMap<MouseInteractionType>,
   filter?: EventType | EventType[],
 ): RichMiddleware => (data) => {
@@ -37,4 +37,4 @@ const mouseMapper = (
   }
 };
 
-export default mouseMapper;
+export default mapMouse;

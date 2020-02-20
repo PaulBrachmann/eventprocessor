@@ -1,8 +1,8 @@
 import EventProcessor from "../../../eventprocessor";
 import { RichEventData } from "../../types";
-import mouseMapper from "./mapper";
+import mapMouse from "./mapper";
 
-describe("mouseMapper", () => {
+describe("mapMouse", () => {
   const processor = new EventProcessor<RichEventData>();
   let data: RichEventData;
 
@@ -19,19 +19,19 @@ describe("mouseMapper", () => {
 
   it("should do nothing for an unclassified event", () => {
     data.device = undefined;
-    expect(mouseMapper({ 3: () => ({ type: "test" }) })(data, processor)).toBe(
+    expect(mapMouse({ 3: () => ({ type: "test" }) })(data, processor)).toBe(
       undefined,
     );
     expect(data.actions).toBe(undefined);
   });
 
   it("should do nothing for an unrecognized interaction", () => {
-    expect(mouseMapper({})(data, processor)).toBe(undefined);
+    expect(mapMouse({})(data, processor)).toBe(undefined);
     expect(data.actions).toBe(undefined);
   });
 
   it("should generate an action", () => {
-    expect(mouseMapper({ 3: () => ({ type: "test" }) })(data, processor)).toBe(
+    expect(mapMouse({ 3: () => ({ type: "test" }) })(data, processor)).toBe(
       undefined,
     );
     expect(data.actions).toEqual([{ type: "test" }]);
@@ -43,7 +43,7 @@ describe("mouseMapper", () => {
     });
     data.eventType = "move";
 
-    expect(mouseMapper({ 3: () => ({ type: "test" }) })(data, processor)).toBe(
+    expect(mapMouse({ 3: () => ({ type: "test" }) })(data, processor)).toBe(
       undefined,
     );
     expect(data.actions).toBe(undefined);

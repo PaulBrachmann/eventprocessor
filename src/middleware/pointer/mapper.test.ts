@@ -1,9 +1,9 @@
 import Pointer from ".";
 import EventProcessor from "../../eventprocessor";
 import { RichEventData } from "../types";
-import pointerMapper from "./mapper";
+import mapPointer from "./mapper";
 
-describe("pointerMapper", () => {
+describe("mapPointer", () => {
   const processor = new EventProcessor<RichEventData>();
   let data: RichEventData;
 
@@ -18,13 +18,13 @@ describe("pointerMapper", () => {
   });
 
   it("should do nothing is there are no pointers", () => {
-    expect(pointerMapper(() => ({ type: "test" }))(data, processor)).toBe(
+    expect(mapPointer(() => ({ type: "test" }))(data, processor)).toBe(
       undefined,
     );
     expect(data.actions).toBe(undefined);
 
     data.pointers = undefined;
-    expect(pointerMapper(() => ({ type: "test" }))(data, processor)).toBe(
+    expect(mapPointer(() => ({ type: "test" }))(data, processor)).toBe(
       undefined,
     );
     expect(data.actions).toBe(undefined);
@@ -39,7 +39,7 @@ describe("pointerMapper", () => {
       ),
     );
     expect(
-      pointerMapper(({ device: { type } }) => ({ type }))(data, processor),
+      mapPointer(({ device: { type } }) => ({ type }))(data, processor),
     ).toBe(undefined);
     expect(data.actions).toEqual([{ type: "mouse" }]);
   });

@@ -3,11 +3,11 @@ import { EventType, RichEventData, RichMiddleware, Action } from "../types";
 import Pointer from ".";
 
 /** Pointer mapper, generates actions from pointers. */
-const pointerMapper = (
+const mapPointer = (
   mappingFunction: (
     pointer: Pointer,
     data: RichEventData,
-  ) => Action | undefined,
+  ) => Action | void | undefined,
   filter?: EventType | EventType[],
 ): RichMiddleware => (data) => {
   if (!data.pointers || !doesMatchFilter(data.eventType, filter)) return;
@@ -25,4 +25,4 @@ const pointerMapper = (
   });
 };
 
-export default pointerMapper;
+export default mapPointer;

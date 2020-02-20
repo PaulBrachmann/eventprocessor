@@ -59,9 +59,6 @@ export type RichMiddleware<
   ID = string
 > = EventMiddleware<RichEventData<ID>, T>;
 
-// eslint-disable-next-line import/prefer-default-export
-export { Pointer };
-
 /** Event processor state extension to capture the current pointers. */
 export interface PointerState<ID = string> {
   pointers: { [pointerId: string]: Pointer<ID> };
@@ -74,4 +71,4 @@ export interface MousePositionState {
 
 export type InteractionMap<
   T extends string | number | symbol = string
-> = Partial<Record<T, (data: RichEventData) => Action | undefined>>;
+> = Partial<Record<T, (data: RichEventData) => Action | void | undefined>>;

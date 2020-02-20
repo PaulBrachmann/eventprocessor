@@ -1,8 +1,10 @@
 export {
   default as adapters,
   mouseAdapter,
-  mouseMapper,
+  mapMouse,
   trackMousePosition,
 } from "./adapters";
-export { default as Pointer, pointerMapper } from "./pointer";
+export { default as Pointer, mapPointer } from "./pointer";
 export * from "./utils";
+
+export * from "./types";

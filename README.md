@@ -24,34 +24,56 @@ npm install --save eventprocessor
 
 ### Example
 
-```javascript
-import DragHandler from "eventprocessor/presets/draghandler";
+```ts
+import EventProcessor, { EventLike } from "eventprocessor";
+import {
+  adapters,
+  RichEventData,
+  PointerState,
+  classify,
+  preventDefault,
+  mapPointer,
+  forAction,
+  Pointer,
+} from "eventprocessor/middleware";
 
-// Create event handler
-const dragHandler = new DragHandler();
+// Create event processor
+const processor = new EventProcessor<RichEventData, PointerState>();
 
-// Add event listener(s) to handler
-dragHandler.on(["start", "move", "end"], (event) => {
-  const { detail } = event;
-
-  console.log(
-    detail.id, // Object id
-    detail.offset.translateX, // X movement
-    detail.offset.translateY, // Y movement
-    detail.offset.scale, // Scale factor
-    detail.context, // Context object (assign properties as you please)
-  );
+const buildPointerAction = (type: string, pointer: Pointer) => ({
+  type,
+  id: pointer.id,
+  device: pointer.device.type,
+  clientX: pointer.detail.clientX,
+  clientY: pointer.detail.clientY,
 });
 
-// Listen to events
-document.body.addEventListener("mousemove", dragHandler.dispatch);
-document.body.addEventListener("mouseup", dragHandler.dispatch);
-document.body.addEventListener("touchmove", dragHandler.dispatch);
-document.body.addEventListener("touchend", dragHandler.dispatch);
+// Register middleware
+processor.use(
+  classify(),
+  adapters(),
+  preventDefault(),
+  mapPointer((pointer) => buildPointerAction("GRAB", pointer), "start"),
+  mapPointer((pointer) => buildPointerAction("MOVE", pointer), "move"),
+  mapPointer((pointer) => buildPointerAction("DROP", pointer), "end"),
+  forAction((action) => {
+    console.log(`${action.device} ${action.type}s ${action.id}`);
+  }),
+);
 
-const listener = (event) => dragHandler.dispatch(event, "id");
-document.getElementById("elementId").addEventListener("mousedown", listener);
-document.getElementById("elementId").addEventListener("touchstart", listener);
+// Add global event listeners
+document.addEventListener("mousemove", processor.dispatch);
+document.addEventListener("mouseup", processor.dispatch);
+
+// Add element event listeners
+const listener = (event: EventLike) => processor.dispatch(event, "id");
+document.getElementById("elementId")?.addEventListener("mousedown", listener);
+
+// Dragging `#elementId` around now results in:
+// mouse GRABs id
+// mouse MOVEs id
+// ...
+// mouse DROPs id
 ```
 
 ## Development
