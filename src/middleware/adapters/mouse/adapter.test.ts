@@ -1,11 +1,20 @@
-import EventProcessor from "../../eventprocessor";
-import Pointer from "../internal/pointer";
-import { PointerState, RichEventData } from "../types";
-import mouseAdapter from "./mouse";
+import EventProcessor from "../../../eventprocessor";
+import Pointer from "../../pointer";
+import { PointerState, RichEventData } from "../../types";
+import mouseAdapter from "./adapter";
 
 describe("mouseAdapter", () => {
-  const processor = new EventProcessor<RichEventData, PointerState<string>>();
-  let pointer: Pointer<string>;
+  const processor = new EventProcessor<RichEventData, PointerState>();
+  const pointer = new Pointer(
+    "uuid",
+    {
+      clientX: 32,
+      clientY: 24,
+      event: new MouseEvent("mousedown", { clientX: 32, clientY: 24 }),
+      identifier: "mouse",
+    },
+    { type: "mouse", mouseButton: 0 },
+  );
 
   it("should do nothing for an unclassified event", () => {
     expect(
@@ -63,16 +72,6 @@ describe("mouseAdapter", () => {
       ),
     ).toBe(undefined);
 
-    pointer = new Pointer(
-      "uuid",
-      {
-        clientX: 32,
-        clientY: 24,
-        event: new MouseEvent("mousedown", { clientX: 32, clientY: 24 }),
-        identifier: "mouse",
-      },
-      "mouse",
-    );
     expect(processor.get("pointers")).toEqual({ mouse: pointer });
   });
 

@@ -5,7 +5,14 @@ import {
   EventMiddleware,
   IEventProcessor,
 } from "../types";
-import { DeviceType, EventType, RichMiddleware } from "./types";
+import { doesMatchFilter } from "../utils";
+import {
+  Action,
+  DeviceType,
+  EventType,
+  RichEventData,
+  RichMiddleware,
+} from "./types";
 
 /** Default mouse/touch event map */
 const defaultEventMap: {
@@ -13,7 +20,6 @@ const defaultEventMap: {
 } = {
   DOMMouseScroll: ["wheel", "wheel"],
   keydown: ["key", "down"],
-  keypress: ["key", "press"],
   keyup: ["key", "up"],
   mousedown: ["mouse", "start"],
   mousemove: ["mouse", "move"],
@@ -98,24 +104,36 @@ export const filter = <
 
 /**
  * Side effects middleware.
+ * The callback is called for each event.
  *
  * @param callback The side effect to be called
  * @param eventType An event type (or array of types) to filter events that trigger the `callback`
  */
-export const sideFx = <T>(
+export const forEvent = <T>(
   callback: (event: EventLike) => void,
   eventType?: string | string[],
 ): EventMiddleware<any, T> => (data) => {
-  if (eventType) {
-    const { type } = data.event;
-
-    if (
-      eventType === type ||
-      (Array.isArray(eventType) && ~eventType.indexOf(type))
-    ) {
-      callback({ ...data });
-    }
-  } else {
+  if (doesMatchFilter(data.event.type, eventType)) {
     callback({ ...data });
   }
+};
+
+/**
+ * Side effects middleware.
+ * The callback is called for each action generated from an event.
+ *
+ * @param callback The side effect to be called
+ * @param actionType An action type (or array of types) to filter events that trigger the `callback`
+ */
+export const forAction = <T>(
+  callback: (action: Action) => void,
+  actionType?: string | string[],
+): EventMiddleware<RichEventData, T> => (data) => {
+  if (!data.actions) return;
+
+  data.actions.forEach((action) => {
+    if (doesMatchFilter(action.type, actionType)) {
+      callback(action);
+    }
+  });
 };

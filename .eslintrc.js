@@ -17,6 +17,7 @@ module.exports = {
     "@typescript-eslint/interface-name-prefix": "off",
     "no-bitwise": "off",
     "no-cond-assign": "off",
+    "import/no-cycle": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "no-param-reassign": ["error", { props: false }],

@@ -1,13 +1,13 @@
-import Pointer from "../internal/pointer";
-import { PointerState, RichMiddleware } from "../types";
+import Pointer from "../../pointer";
+import { PointerState, RichMiddleware } from "../../types";
 
 export const pointerId = "mouse";
 
-/** Mouse adapter, generates & tracks pointer data for mouse events */
+/** Mouse adapter, generates & tracks pointer data for mouse events. */
 const mouseAdapter = <
   ID = string,
   T extends PointerState<ID> = PointerState<ID>
->(): RichMiddleware<T> => (data, processor) => {
+>(): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device === "mouse") {
     const type = data.eventType;
 
@@ -21,7 +21,7 @@ const mouseAdapter = <
       if (id !== undefined) {
         const { event } = data;
         // Create pointer
-        pointer = new Pointer(
+        pointer = new Pointer<ID>(
           id,
           {
             clientX: (event as MouseEvent).clientX,
@@ -29,7 +29,7 @@ const mouseAdapter = <
             event,
             identifier: pointerId,
           },
-          "mouse",
+          { type: "mouse", mouseButton: (event as MouseEvent).button },
         );
 
         // Write id & pointer to context

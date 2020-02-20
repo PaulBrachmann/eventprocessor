@@ -1,5 +1,6 @@
-import mouse from "./mouse";
+import mouseAdapter from "./mouse";
 
-export { mouse };
+export { mouseAdapter };
+export { mouseMapper, MouseInteractionType } from "./mouse";
 
-export default () => [mouse()];
+export default () => [mouseAdapter()];

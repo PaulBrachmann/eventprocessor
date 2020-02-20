@@ -1,6 +1,14 @@
 import EventProcessor, { BreakException } from "../eventprocessor";
 import { EventData } from "../types";
-import { classify, filter, log, preventDefault, sideFx } from "./utils";
+import {
+  classify,
+  filter,
+  log,
+  preventDefault,
+  forEvent,
+  forAction,
+} from "./utils";
+import { RichEventData } from "./types";
 
 /* eslint-disable no-console */
 
@@ -120,7 +128,7 @@ describe("filter", () => {
   });
 });
 
-describe("sideFx", () => {
+describe("forEvent", () => {
   const callback = jest.fn();
 
   const event = new Event("type");
@@ -131,25 +139,25 @@ describe("sideFx", () => {
   });
 
   it("should execute side effects for all events", () => {
-    expect(sideFx(callback)(data, processor)).toBe(undefined);
+    expect(forEvent(callback)(data, processor)).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith(data);
   });
 
   it("should execute side effects for a given event type", () => {
-    expect(sideFx(callback, "type")(data, processor)).toBe(undefined);
+    expect(forEvent(callback, "type")(data, processor)).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(1);
     expect(callback).toHaveBeenCalledWith(data);
   });
 
   it("should not execute side effects for a different event type than given", () => {
-    expect(sideFx(callback, "otherType")(data, processor)).toBe(undefined);
+    expect(forEvent(callback, "otherType")(data, processor)).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(0);
   });
 
   it("should execute side effects for a listed event type", () => {
     expect(
-      sideFx(callback, ["type", "type2"])(
+      forEvent(callback, ["type", "type2"])(
         { event: new Event("type2"), args: [] },
         processor,
       ),
@@ -159,11 +167,37 @@ describe("sideFx", () => {
 
   it("should not execute side effects for an unlisted event type", () => {
     expect(
-      sideFx(callback, ["type", "type2"])(
+      forEvent(callback, ["type", "type2"])(
         { event: new Event("type3"), args: [] },
         processor,
       ),
     ).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe("forAction", () => {
+  const callback = jest.fn();
+
+  const event = new Event("type");
+  let data: RichEventData = { event, actions: [], args: [] };
+
+  beforeEach(() => {
+    data = { event, actions: [], args: [] };
+    jest.clearAllMocks();
+  });
+
+  it("should not execute side effects if there are no actions", () => {
+    expect(forAction(callback)(data, processor)).toBe(undefined);
+    data.actions = undefined;
+    expect(forAction(callback)(data, processor)).toBe(undefined);
+    expect(callback).toHaveBeenCalledTimes(0);
+  });
+
+  it("should not execute side effects for each action", () => {
+    data.actions!.push({ type: "test" }, { type: "test" });
+
+    expect(forAction(callback)(data, processor)).toBe(undefined);
+    expect(callback).toHaveBeenCalledTimes(2);
   });
 });

@@ -2,7 +2,7 @@
 
 export type NestedArray<T> = (NestedArray<T> | T)[];
 
-/** Flattens an array of arrays */
+/** Flattens an array of arrays. */
 export const flattenArray = <T>(
   array: NestedArray<T>,
   flattened: T[] = [],
@@ -19,3 +19,11 @@ export const flattenArray = <T>(
 
   return flattened;
 };
+
+/** Returns true if the filter is satisfied. */
+export const doesMatchFilter = <T>(value: T, filter?: T | T[]) =>
+  !!(
+    filter === undefined ||
+    value === filter ||
+    (Array.isArray(filter) && ~filter.indexOf(value))
+  );
