@@ -4,7 +4,11 @@ import { DeviceType } from "../types";
 
 export interface PointerDevice {
   type: DeviceType;
+
+  altKey?: boolean;
+  ctrlKey?: boolean;
   mouseButton?: MouseInteractionType;
+  shiftKey?: boolean;
 }
 
 export interface PointerDetail {

@@ -29,7 +29,14 @@ const mouseAdapter = <
             event,
             identifier: pointerId,
           },
-          { type: "mouse", mouseButton: (event as MouseEvent).button },
+          {
+            type: "mouse",
+
+            altKey: (event as MouseEvent).altKey,
+            ctrlKey: (event as MouseEvent).ctrlKey,
+            mouseButton: (event as MouseEvent).button,
+            shiftKey: (event as MouseEvent).shiftKey,
+          },
         );
 
         // Write id & pointer to context

@@ -10,10 +10,19 @@ describe("mouseAdapter", () => {
     {
       clientX: 32,
       clientY: 24,
-      event: new MouseEvent("mousedown", { clientX: 32, clientY: 24 }),
+      event: new MouseEvent("mousedown", {
+        clientX: 32,
+        clientY: 24,
+      }),
       identifier: "mouse",
     },
-    { type: "mouse", mouseButton: 0 },
+    {
+      type: "mouse",
+      altKey: false,
+      ctrlKey: false,
+      mouseButton: 0,
+      shiftKey: false,
+    },
   );
 
   it("should do nothing for an unclassified event", () => {
