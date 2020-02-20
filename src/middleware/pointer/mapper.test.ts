@@ -35,7 +35,7 @@ describe("mapPointer", () => {
       new Pointer(
         "uuid",
         { clientX: 0, clientY: 0, identifier: "mouse" },
-        { type: "mouse" },
+        { type: "mouse", startTime: 0 },
       ),
     );
     expect(

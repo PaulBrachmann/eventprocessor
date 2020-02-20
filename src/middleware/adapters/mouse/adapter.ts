@@ -30,6 +30,7 @@ const mouseAdapter = <
         },
         {
           type: "mouse",
+          startTime: event.timeStamp,
 
           altKey: (event as MouseEvent).altKey,
           ctrlKey: (event as MouseEvent).ctrlKey,

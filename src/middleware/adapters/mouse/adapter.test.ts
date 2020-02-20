@@ -18,6 +18,7 @@ describe("mouseAdapter", () => {
     },
     {
       type: "mouse",
+      startTime: expect.anything(),
       altKey: false,
       ctrlKey: false,
       mouseButton: 0,

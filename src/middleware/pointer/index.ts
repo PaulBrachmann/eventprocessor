@@ -4,6 +4,7 @@ import { DeviceType } from "../types";
 
 export interface PointerDevice {
   type: DeviceType;
+  startTime: DOMTimeStamp | DOMHighResTimeStamp;
 
   altKey?: boolean;
   ctrlKey?: boolean;
@@ -27,9 +28,9 @@ class Pointer<ID = string> {
   constructor(
     /** Associates the pointer with a ui element. */
     public id: ID,
-    /** Pointer detail, stores pointer position. */
+    /** Pointer detail, stores the current pointer position. */
     public detail: PointerDetail,
-    /** Metadata about the device this pointer originates from. */
+    /** Metadata about the device this pointer originates from, recorded on pointer creation. */
     public device: PointerDevice,
   ) {}
 }
