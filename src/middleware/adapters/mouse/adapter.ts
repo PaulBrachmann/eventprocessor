@@ -1,26 +1,18 @@
 import Pointer from "../../pointer";
-import { PointerState, RichMiddleware, MousePositionState } from "../../types";
+import { PointerState, RichMiddleware } from "../../types";
 
 export const pointerId = "mouse";
 
 /** Mouse adapter, generates & tracks pointer data for mouse events. */
 const mouseAdapter = <
   ID = string,
-  T extends PointerState<ID> & MousePositionState = PointerState<ID> &
-    MousePositionState
+  T extends PointerState<ID> = PointerState<ID>
 >(): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device !== "mouse") return;
 
   const type = data.eventType;
   let pointers = processor.get("pointers");
   let pointer: Pointer<ID> | undefined;
-
-  // Update current mouse position
-  processor.update("mousePosition", (mousePosition = {}) => {
-    mousePosition.clientX = (data.event as MouseEvent).clientX;
-    mousePosition.clientY = (data.event as MouseEvent).clientY;
-  });
-
   if (type === "start") {
     // Get id from caller arguments
     const id = data.args[0];

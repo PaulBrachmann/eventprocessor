@@ -47,12 +47,12 @@ export interface IEventProcessor<
   get<K extends keyof T>(key: K): T[K] | undefined;
 
   /** Sets a value in the event processor's state. */
-  set<K extends keyof T>(key: K, value: any): IEventProcessor<D, T>;
+  set<K extends keyof T>(key: K, value: T[K]): IEventProcessor<D, T>;
 
   /** Updates a value in the event processor's state. */
   update<K extends keyof T>(
     key: K,
-    updater: (value: any) => any,
+    updater: (value: T[K]) => T[K],
   ): IEventProcessor<D, T>;
 
   /** Applies middleware. */

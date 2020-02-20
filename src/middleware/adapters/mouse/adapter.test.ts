@@ -1,13 +1,10 @@
 import EventProcessor from "../../../eventprocessor";
 import Pointer from "../../pointer";
-import { PointerState, RichEventData, MousePositionState } from "../../types";
+import { PointerState, RichEventData } from "../../types";
 import mouseAdapter from "./adapter";
 
 describe("mouseAdapter", () => {
-  const processor = new EventProcessor<
-    RichEventData,
-    PointerState & MousePositionState
-  >();
+  const processor = new EventProcessor<RichEventData, PointerState>();
   const pointer = new Pointer(
     "uuid",
     {
