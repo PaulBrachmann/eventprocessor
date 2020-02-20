@@ -9,11 +9,13 @@ The default configuration enables you to easily process drag & drop mouse input 
 ## Install
 
 using [yarn](https://yarnpkg.com/en/)
+
 ```shell
 yarn add eventprocessor
 ```
 
 or npm
+
 ```shell
 npm install --save eventprocessor
 ```
@@ -21,14 +23,15 @@ npm install --save eventprocessor
 ## Usage
 
 ### Example
+
 ```javascript
-import DragHandler from 'eventprocessor/presets/draghandler';
+import DragHandler from "eventprocessor/presets/draghandler";
 
 // Create event handler
 const dragHandler = new DragHandler();
 
 // Add event listener(s) to handler
-dragHandler.on(['start', 'move', 'end'], (event) => {
+dragHandler.on(["start", "move", "end"], (event) => {
   const { detail } = event;
 
   console.log(
@@ -41,58 +44,38 @@ dragHandler.on(['start', 'move', 'end'], (event) => {
 });
 
 // Listen to events
-document.body.addEventListener('mousemove', dragHandler.dispatch);
-document.body.addEventListener('mouseup', dragHandler.dispatch);
-document.body.addEventListener('touchmove', dragHandler.dispatch);
-document.body.addEventListener('touchend', dragHandler.dispatch);
+document.body.addEventListener("mousemove", dragHandler.dispatch);
+document.body.addEventListener("mouseup", dragHandler.dispatch);
+document.body.addEventListener("touchmove", dragHandler.dispatch);
+document.body.addEventListener("touchend", dragHandler.dispatch);
 
-const listener = (event) => dragHandler.dispatch(event, 'id');
-document.getElementById('elementId').addEventListener('mousedown', listener);
-document.getElementById('elementId').addEventListener('touchstart', listener);
+const listener = (event) => dragHandler.dispatch(event, "id");
+document.getElementById("elementId").addEventListener("mousedown", listener);
+document.getElementById("elementId").addEventListener("touchstart", listener);
 ```
 
+## Development
 
-## Developing
+In the project directory, you can run:
 
-This is what you do after you have cloned the repository:
+### `yarn format`
 
-```shell
-yarn / npm install
-```
+Runs automated code formatting on all applicable file types.
 
-(Install dependencies)
+### `yarn lint`
 
-### Linting
+Lints all applicable files and prints the output.
 
-Execute TSLint
+### `yarn compile`
 
-```shell
-npm run lint
-```
+Dry-runs the TypeScript compiler. This is especially useful to check whether any types or references broke after a big refactoring.
 
-Try to automatically fix linting errors
-```shell
-npm run lint:fix
-```
+### `yarn test`
 
-### Testing
+Launches the test runner.
 
-Execute Jest unit tests using
+Coverage can be collected using `yarn coverage`.
 
-```shell
-npm test
+### `yarn build`
 
-npm run test:coverage
-```
-
-Tests are defined in the same directory the module lives in. They are specified in '[module].test.js' files.
-
-### Building
-
-To build the project, execute
-
-```shell
-npm run build
-```
-
-This saves the production ready code into 'dist/'.
+Builds the library for production to the `dist` folder.
