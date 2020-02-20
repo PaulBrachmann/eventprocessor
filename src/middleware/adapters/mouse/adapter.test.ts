@@ -17,7 +17,7 @@ describe("mouseAdapter", () => {
       identifier: "mouse",
     },
     {
-      type: "mouse",
+      device: "mouse",
       startTime: expect.anything(),
       altKey: false,
       ctrlKey: false,

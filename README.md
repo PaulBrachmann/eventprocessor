@@ -43,7 +43,7 @@ const processor = new EventProcessor<RichEventData, PointerState>();
 const buildPointerAction = (type: string, pointer: Pointer) => ({
   type,
   id: pointer.id,
-  device: pointer.device.type,
+  device: pointer.context.device,
   clientX: pointer.detail.clientX,
   clientY: pointer.detail.clientY,
 });

@@ -29,7 +29,7 @@ const mouseAdapter = <
           identifier: pointerId,
         },
         {
-          type: "mouse",
+          device: "mouse",
           startTime: event.timeStamp,
 
           altKey: (event as MouseEvent).altKey,

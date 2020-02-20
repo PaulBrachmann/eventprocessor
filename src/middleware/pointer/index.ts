@@ -2,8 +2,8 @@ import { EventLike } from "../../types";
 import { MouseInteractionType } from "../adapters/mouse";
 import { DeviceType } from "../types";
 
-export interface PointerDevice {
-  type: DeviceType;
+export interface PointerContext {
+  device: DeviceType;
   startTime: DOMTimeStamp | DOMHighResTimeStamp;
 
   altKey?: boolean;
@@ -30,8 +30,8 @@ class Pointer<ID = string> {
     public id: ID,
     /** Pointer detail, stores the current pointer position. */
     public detail: PointerDetail,
-    /** Metadata about the device this pointer originates from, recorded on pointer creation. */
-    public device: PointerDevice,
+    /** Pointer metadata, recorded on pointer creation. */
+    public context: PointerContext,
   ) {}
 }
 

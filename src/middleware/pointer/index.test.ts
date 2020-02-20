@@ -5,7 +5,7 @@ describe("pointer", () => {
     const pointer = new Pointer(
       "uuid",
       { clientX: 64, clientY: 128, identifier: "mouse" },
-      { type: "mouse", startTime: 0 },
+      { device: "mouse", startTime: 0 },
     );
 
     expect(pointer.id).toBe("uuid");
@@ -14,6 +14,6 @@ describe("pointer", () => {
       clientY: 128,
       identifier: "mouse",
     });
-    expect(pointer.device).toEqual({ type: "mouse", startTime: 0 });
+    expect(pointer.context).toEqual({ device: "mouse", startTime: 0 });
   });
 });

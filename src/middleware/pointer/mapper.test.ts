@@ -35,11 +35,14 @@ describe("mapPointer", () => {
       new Pointer(
         "uuid",
         { clientX: 0, clientY: 0, identifier: "mouse" },
-        { type: "mouse", startTime: 0 },
+        { device: "mouse", startTime: 0 },
       ),
     );
     expect(
-      mapPointer(({ device: { type } }) => ({ type }))(data, processor),
+      mapPointer(({ context: { device: type } }) => ({ type }))(
+        data,
+        processor,
+      ),
     ).toBe(undefined);
     expect(data.actions).toEqual([{ type: "mouse" }]);
   });
