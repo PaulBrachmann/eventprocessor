@@ -61,8 +61,15 @@ export type RichMiddleware<
 
 // eslint-disable-next-line import/prefer-default-export
 export { Pointer };
+
+/** Event processor state extension to capture the current pointers. */
 export interface PointerState<ID = string> {
   pointers: { [pointerId: string]: Pointer<ID> };
+}
+
+/** Event processor state extension to capture the last-recorded mouse position. */
+export interface MousePositionState {
+  mousePosition?: { clientX: number; clientY: number };
 }
 
 export type InteractionMap<

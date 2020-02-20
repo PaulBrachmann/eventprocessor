@@ -12,7 +12,6 @@ export interface PointerDevice {
 }
 
 export interface PointerDetail {
-  _scale?: number;
   clientX: number;
   clientY: number;
   event?: EventLike | Touch;
