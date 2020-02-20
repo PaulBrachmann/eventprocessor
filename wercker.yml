@@ -2,10 +2,7 @@ box: node
 
 build:
   steps:
-    # Install yarn & project dependencies
-    - script:
-      name: install yarn
-      code: npm install -g yarn
+    # Install dependencies
     - script:
       name: set yarn cache
       code: export YARN_CACHE=$WERCKER_CACHE_DIR/yarn
