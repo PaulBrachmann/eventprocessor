@@ -3,7 +3,7 @@ import { EventType, RichEventData, RichMiddleware, Action } from "../types";
 import Pointer from ".";
 
 /** Pointer mapper, generates actions from pointers. */
-const mapPointer = (
+const mapPointers = (
   mappingFunction: (
     pointer: Pointer,
     data: RichEventData,
@@ -25,4 +25,4 @@ const mapPointer = (
   });
 };
 
-export default mapPointer;
+export default mapPointers;

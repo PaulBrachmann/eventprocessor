@@ -32,7 +32,7 @@ import {
   PointerState,
   classify,
   preventDefault,
-  mapPointer,
+  mapPointers,
   forAction,
   Pointer,
 } from "eventprocessor/middleware";
@@ -53,9 +53,9 @@ processor.use(
   classify(),
   adapters(),
   preventDefault(),
-  mapPointer((pointer) => buildPointerAction("GRAB", pointer), "start"),
-  mapPointer((pointer) => buildPointerAction("MOVE", pointer), "move"),
-  mapPointer((pointer) => buildPointerAction("DROP", pointer), "end"),
+  mapPointers((pointer) => buildPointerAction("GRAB", pointer), "start"),
+  mapPointers((pointer) => buildPointerAction("MOVE", pointer), "move"),
+  mapPointers((pointer) => buildPointerAction("DROP", pointer), "end"),
   forAction((action) => {
     console.log(`${action.device} ${action.type}s ${action.id}`);
   }),
