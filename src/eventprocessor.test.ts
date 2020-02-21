@@ -92,17 +92,20 @@ describe("event processor", () => {
       new EventProcessor()
         .use(mock, mock)
         .use(mock)
+        .useAfter(mock)
         .dispatch(event, "id"),
     );
 
     const data = { event, args: ["id"] };
-    expect(mock).toHaveBeenCalledTimes(3);
+    expect(mock).toHaveBeenCalledTimes(4);
     expect(mock.mock.calls[0][0 as any]).toEqual(data);
     expect(mock.mock.calls[0][1 as any]).toBeInstanceOf(EventProcessor);
     expect(mock.mock.calls[1][0 as any]).toEqual(data);
     expect(mock.mock.calls[1][1 as any]).toBeInstanceOf(EventProcessor);
     expect(mock.mock.calls[2][0 as any]).toEqual(data);
     expect(mock.mock.calls[2][1 as any]).toBeInstanceOf(EventProcessor);
+    expect(mock.mock.calls[3][0 as any]).toEqual(data);
+    expect(mock.mock.calls[3][1 as any]).toBeInstanceOf(EventProcessor);
   });
 
   it("should cancel an event chain", () => {
@@ -112,13 +115,21 @@ describe("event processor", () => {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw new BreakException();
     });
+
+    const mockAfter = jest.fn(() => {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw new BreakException();
+    });
+
     expect(
       new EventProcessor()
         .use(mock, mock)
         .use(mock)
+        .useAfter(mockAfter, mockAfter)
         .dispatch(event, "id"),
     );
 
     expect(mock).toHaveBeenCalledTimes(1);
+    expect(mockAfter).toHaveBeenCalledTimes(2);
   });
 });

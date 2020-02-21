@@ -59,4 +59,14 @@ export interface IEventProcessor<
   use(
     ...middlewares: MiddlewareChain<EventMiddleware<D, T>>
   ): IEventProcessor<D, T>;
+
+  /**
+   * Applies afterware.
+   * This is different from `use` (which applies middleware) in so far that the afterware
+   * chain can not break and is always executed after the middleware chain completes
+   * (even if it terminated early through e.g. the `filter` middleware).
+   */
+  useAfter(
+    ...afterwares: MiddlewareChain<EventMiddleware<D, T>>
+  ): IEventProcessor<D, T>;
 }

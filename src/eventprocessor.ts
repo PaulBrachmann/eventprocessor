@@ -22,6 +22,9 @@ export default class EventProcessor<
   /** The middleware chain. */
   protected middlewares: EventMiddleware<D, T>[] = [];
 
+  /** The afterware chain. */
+  protected afterwares: EventMiddleware<D, T>[] = [];
+
   constructor(
     /** The event processor's state */
     protected state: Partial<T> = {},
@@ -33,16 +36,19 @@ export default class EventProcessor<
   }
 
   public dispatch = (event: EventLike, ...args: any[]) => {
+    const eventData = { event, args };
     try {
-      const eventData = { event, args };
       this.middlewares.forEach((middleware) => {
-        middleware(eventData as any, this as any);
+        middleware(eventData as any, this);
       });
+      this.dispatchAfter(eventData as any);
     } catch (error) {
-      if (
-        !(error instanceof BreakException) &&
-        process.env.NODE_ENV !== "production"
-      ) {
+      if (error instanceof BreakException) {
+        this.dispatchAfter(eventData as any);
+        return this;
+      }
+
+      if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.error("Error in event handling chain: ", error);
       }
@@ -64,9 +70,30 @@ export default class EventProcessor<
     return this;
   }
 
-  /** Applies middleware. */
   public use(...middlewares: MiddlewareChain<EventMiddleware<D, T>>) {
     this.middlewares.push(...flattenArray<EventMiddleware<D, T>>(middlewares));
     return this;
+  }
+
+  public useAfter(...afterwares: MiddlewareChain<EventMiddleware<D, T>>) {
+    this.afterwares.push(...flattenArray<EventMiddleware<D, T>>(afterwares));
+    return this;
+  }
+
+  /** Triggers the afterware chain. */
+  protected dispatchAfter(data: D) {
+    this.afterwares.forEach((afterware) => {
+      try {
+        afterware(data, this);
+      } catch (error) {
+        if (
+          !(error instanceof BreakException) &&
+          process.env.NODE_ENV !== "production"
+        ) {
+          // eslint-disable-next-line no-console
+          console.error(error);
+        }
+      }
+    });
   }
 }
