@@ -13,6 +13,7 @@ const mouseAdapter = <
   const type = data.eventType;
   let pointers = processor.get("pointers");
   let pointer: Pointer<ID> | undefined;
+
   if (type === "start") {
     // Get id from caller arguments
     const id = data.args[0];
@@ -42,6 +43,11 @@ const mouseAdapter = <
       // Write id & pointer to context
       data.ids = [id];
       data.pointers = [pointer];
+
+      // Write pointer to state
+      if (!pointers) pointers = {};
+      (pointers as PointerState<ID>["pointers"])[pointerId] = pointer;
+      processor.set("pointers", pointers);
     }
   } else if (pointers) {
     // Get registered pointer (if any)
@@ -64,19 +70,9 @@ const mouseAdapter = <
       data.pointers = [pointer];
 
       if (type === "end") {
-        // Prevent write
-        pointer = undefined;
-
         delete pointers[pointerId];
       }
     }
-  }
-
-  if (pointer) {
-    // Write pointer to state
-    if (!pointers) pointers = {};
-    (pointers as PointerState<ID>["pointers"])[pointerId] = pointer;
-    processor.set("pointers", pointers);
   }
 };
 
