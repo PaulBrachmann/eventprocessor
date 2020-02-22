@@ -8,9 +8,10 @@ export const forEachTouch = (
   touches: TouchList,
   callback: (touch: Touch) => void,
 ) => {
-  let { length } = touches;
-  while (~(length -= 1)) {
-    callback(touches[length]);
+  const { length } = touches;
+
+  for (let index = 0; index < length; index++) {
+    callback(touches[index]);
   }
 };
 
@@ -23,7 +24,7 @@ const touchAdapter = <
 
   const type = data.eventType;
   let pointers = processor.get("pointers");
-  const currentPointers: Pointer<ID>[] = [];
+  let currentPointers: Pointer<ID>[] | undefined;
 
   if (type === "start") {
     // Get id from caller arguments
@@ -32,6 +33,7 @@ const touchAdapter = <
     if (id !== undefined) {
       const { event } = data;
       if (!pointers) pointers = {};
+      currentPointers = [];
 
       // Iterate changed touches
       forEachTouch((event as TouchEvent).changedTouches, (touch) => {
@@ -56,7 +58,7 @@ const touchAdapter = <
         );
 
         (pointers as PointerState<ID>["pointers"])[pointerId] = pointer;
-        currentPointers.push(pointer);
+        currentPointers!.push(pointer);
       });
 
       // Write id to context
@@ -66,7 +68,7 @@ const touchAdapter = <
       processor.set("pointers", pointers as PointerState<ID>["pointers"]);
     }
   } else if (pointers) {
-    const ids: { [id: string]: true } = {};
+    let ids: Set<ID> | undefined;
 
     // Iterate changed touches
     forEachTouch((data.event as TouchEvent).changedTouches, (touch) => {
@@ -76,6 +78,7 @@ const touchAdapter = <
       const pointer = (pointers as { [key: string]: Pointer<ID> })[pointerId];
 
       if (pointer) {
+        if (!currentPointers) currentPointers = [];
         currentPointers.push(pointer);
 
         if (type === "move") {
@@ -88,8 +91,9 @@ const touchAdapter = <
           };
         }
 
-        // Get id & write to dedupe map
-        (ids as any)[pointer.id] = true; // TODO: Use Set
+        // Get id & write to dedupe set
+        if (!ids) ids = new Set();
+        ids.add(pointer.id);
 
         if (type === "end") {
           // Delete pointer
@@ -99,11 +103,11 @@ const touchAdapter = <
     });
 
     // Write ids to context
-    data.ids = (Object.keys(ids) as any) as ID[];
+    if (ids) data.ids = Array.from(ids);
   }
 
   // Write pointers to context
-  data.pointers = currentPointers;
+  if (currentPointers) data.pointers = currentPointers;
 };
 
 export default touchAdapter;
