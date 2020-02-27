@@ -13,10 +13,13 @@ export interface PointerContext {
 }
 
 export interface PointerDetail {
-  clientX: number;
-  clientY: number;
   event?: EventLike | Touch;
   identifier: string;
+
+  clientX: number;
+  clientY: number;
+  rotate2d?: number;
+  scale?: number;
   [prop: string]: any;
 }
 
