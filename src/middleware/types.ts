@@ -1,5 +1,6 @@
 import { EventData, EventMiddleware, EventLike } from "../types";
 import Pointer from "./pointer";
+import { TransformGesture } from "./gesturizer";
 
 /** Devices that can dispatch events to the middleware chain. */
 export type DeviceType = "key" | "mouse" | "touch" | "wheel";
@@ -63,6 +64,10 @@ export type RichMiddleware<
 /** Event processor state extension to capture the current pointers. */
 export interface PointerState<ID = string> {
   pointers?: { [pointerId: string]: Pointer<ID> };
+}
+
+export interface GestureState<ID extends string | number | symbol = string> {
+  gestures?: Partial<Record<ID, TransformGesture>>;
 }
 
 /** Event processor state extension to capture the last-recorded mouse position. */
