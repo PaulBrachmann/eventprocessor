@@ -5,7 +5,13 @@ import {
   RichMiddleware,
 } from "../../types";
 
-/** Keyboard mapper, generates actions from key events. */
+/**
+ * Keyboard mapper, generates actions from key events.
+ *
+ * @param bindings Key bindings, consisting of an array of
+ * [`KeyboardEvent.key` values](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values)
+ * and a mapping function that may return an action gerenated by the key combination.
+ */
 const mapKeys = <T extends KeysPressedState = KeysPressedState, ID = string>(
   ...bindings: { keys: string[]; mapper: MappingFunction<ID, KeyboardEvent> }[]
 ): RichMiddleware<T, ID> => (data, processor) => {
