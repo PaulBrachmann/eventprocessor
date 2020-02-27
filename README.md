@@ -52,28 +52,40 @@ const buildPointerAction = (type: string, pointer: Pointer) => ({
 processor.use(
   classify(),
   adapters(),
-  preventDefault(),
+  preventDefault(true),
   mapPointers((pointer) => buildPointerAction("GRAB", pointer), "start"),
   mapPointers((pointer) => buildPointerAction("MOVE", pointer), "move"),
   mapPointers((pointer) => buildPointerAction("DROP", pointer), "end"),
+  mapKeys({ keys: ["Control", "+"], mapper: () => ({ type: "ZOOM_IN" }) })
   forAction((action) => {
     console.log(`${action.device} ${action.type}s ${action.id}`);
-  }),
+  }, ["GRAB", "MOVE", "DROP"]),
+  forAction((action) => {
+    console.log("Enhance!");
+  }, "ZOOM_IN"),
 );
 
 // Add global event listeners
+document.addEventListener("keydown", processor.dispatch);
+document.addEventListener("keyup", processor.dispatch);
 document.addEventListener("mousemove", processor.dispatch);
 document.addEventListener("mouseup", processor.dispatch);
+document.addEventListener("touchmove", processor.dispatch);
+document.addEventListener("touchend", processor.dispatch);
 
 // Add element event listeners
 const listener = (event: EventLike) => processor.dispatch(event, "id");
 document.getElementById("elementId")?.addEventListener("mousedown", listener);
+document.getElementById("elementId")?.addEventListener("touchstart", listener);
 
 // Dragging `#elementId` around now results in:
 // mouse GRABs id
 // mouse MOVEs id
 // ...
 // mouse DROPs id
+
+// Pressing Ctrl + +:
+// Enhance!
 ```
 
 ## Development
