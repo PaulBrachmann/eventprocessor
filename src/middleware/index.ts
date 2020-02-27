@@ -3,6 +3,7 @@ export {
   areKeysPressed,
   keyAdapter,
   mouseAdapter,
+  mapKeys,
   mapMouse,
   touchAdapter,
   trackMousePosition,
