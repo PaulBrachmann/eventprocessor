@@ -46,7 +46,7 @@ const mouseAdapter = <
 
       // Write pointer to state
       if (!pointers) pointers = {};
-      (pointers as PointerState<ID>["pointers"])[pointerId] = pointer;
+      (pointers as PointerState<ID>["pointers"])![pointerId] = pointer;
       processor.set("pointers", pointers);
     }
   } else if (pointers) {

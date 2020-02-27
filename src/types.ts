@@ -15,11 +15,11 @@ export interface EventLike {
 }
 
 /** Event processor data interface (passed to middleware). */
-export interface EventData {
+export interface EventData<E extends EventLike = EventLike> {
   /** The original arguments passed to `dispatch`. */
   args: any[];
   /** The original event. */
-  event: EventLike;
+  event: E;
 
   [key: string]: any;
 }

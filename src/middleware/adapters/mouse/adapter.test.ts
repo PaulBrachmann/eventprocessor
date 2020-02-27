@@ -27,76 +27,68 @@ describe("mouseAdapter", () => {
   );
 
   it("should do nothing for an unclassified event", () => {
-    expect(
-      mouseAdapter()(
-        {
-          args: [],
-          event: new MouseEvent("mousedown", { clientX: 0, clientY: 0 }),
-        },
-        processor,
-      ),
-    ).toBe(undefined);
+    const data: RichEventData = {
+      args: [],
+      event: new MouseEvent("mousedown", { clientX: 0, clientY: 0 }),
+    };
+
+    expect(mouseAdapter()(data, processor)).toBe(undefined);
+
     expect(processor.get("pointers")).toBe(undefined);
+    expect(data.ids).toBe(undefined);
   });
 
   it("should do nothing for an unrecognized event", () => {
-    expect(
-      mouseAdapter()(
-        {
-          args: ["uuid"],
-          device: "mouse",
-          event: new MouseEvent("mousedown", { clientX: 0, clientY: 0 }),
-          eventType: "undef" as any,
-        },
-        processor,
-      ),
-    ).toBe(undefined);
+    const data: RichEventData = {
+      args: ["uuid"],
+      device: "mouse",
+      event: new MouseEvent("mousedown", { clientX: 0, clientY: 0 }),
+      eventType: "undef" as any,
+    };
+
+    expect(mouseAdapter()(data, processor)).toBe(undefined);
+
     expect(processor.get("pointers")).toBe(undefined);
+    expect(data.ids).toBe(undefined);
   });
 
   it("should do nothing if no id is passed with start event", () => {
-    expect(
-      mouseAdapter()(
-        {
-          args: [],
-          device: "mouse",
-          event: new MouseEvent("mousedown", { clientX: 0, clientY: 0 }),
-          eventType: "start",
-        },
-        processor,
-      ),
-    ).toBe(undefined);
+    const data: RichEventData = {
+      args: [],
+      device: "mouse",
+      event: new MouseEvent("mousedown", { clientX: 0, clientY: 0 }),
+      eventType: "start",
+    };
+
+    expect(mouseAdapter()(data, processor)).toBe(undefined);
+
     expect(processor.get("pointers")).toBe(undefined);
+    expect(data.ids).toBe(undefined);
   });
 
   it("should create a new pointer", () => {
-    expect(
-      mouseAdapter()(
-        {
-          args: ["uuid"],
-          device: "mouse",
-          event: new MouseEvent("mousedown", { clientX: 32, clientY: 24 }),
-          eventType: "start",
-        },
-        processor,
-      ),
-    ).toBe(undefined);
+    const data: RichEventData = {
+      args: ["uuid"],
+      device: "mouse",
+      event: new MouseEvent("mousedown", { clientX: 32, clientY: 24 }),
+      eventType: "start",
+    };
+
+    expect(mouseAdapter()(data, processor)).toBe(undefined);
 
     expect(processor.get("pointers")).toEqual({ mouse: pointer });
+    expect(data.ids).toEqual(["uuid"]);
   });
 
   it("should update a pointer", () => {
-    expect(
-      mouseAdapter()(
-        {
-          args: [],
-          device: "mouse",
-          event: new MouseEvent("mousemove", { clientX: 64, clientY: 32 }),
-          eventType: "move",
-        },
-        processor,
-      ),
-    ).toBe(undefined);
+    const data: RichEventData = {
+      args: [],
+      device: "mouse",
+      event: new MouseEvent("mousemove", { clientX: 64, clientY: 32 }),
+      eventType: "move",
+    };
+
+    expect(mouseAdapter()(data, processor)).toBe(undefined);
 
     pointer.detail = {
       clientX: 64,
@@ -105,35 +97,34 @@ describe("mouseAdapter", () => {
       identifier: "mouse",
     };
     expect(processor.get("pointers")).toEqual({ mouse: pointer });
+    expect(data.ids).toEqual(["uuid"]);
   });
 
   it("should delete a pointer", () => {
-    expect(
-      mouseAdapter()(
-        {
-          args: [],
-          device: "mouse",
-          event: new MouseEvent("mouseup", { clientX: 64, clientY: 32 }),
-          eventType: "end",
-        },
-        processor,
-      ),
-    ).toBe(undefined);
+    const data: RichEventData = {
+      args: [],
+      device: "mouse",
+      event: new MouseEvent("mouseup", { clientX: 64, clientY: 32 }),
+      eventType: "end",
+    };
+
+    expect(mouseAdapter()(data, processor)).toBe(undefined);
+
     expect(processor.get("pointers")).toEqual({});
+    expect(data.ids).toEqual(["uuid"]);
   });
 
   it("should do nothing when trying to modify a non-existent pointer", () => {
-    expect(
-      mouseAdapter()(
-        {
-          args: [],
-          device: "mouse",
-          event: new MouseEvent("mousemove", { clientX: 64, clientY: 32 }),
-          eventType: "move",
-        },
-        processor,
-      ),
-    ).toBe(undefined);
+    const data: RichEventData = {
+      args: [],
+      device: "mouse",
+      event: new MouseEvent("mousemove", { clientX: 64, clientY: 32 }),
+      eventType: "move",
+    };
+
+    expect(mouseAdapter()(data, processor)).toBe(undefined);
+
     expect(processor.get("pointers")).toEqual({});
+    expect(data.ids).toBe(undefined);
   });
 });

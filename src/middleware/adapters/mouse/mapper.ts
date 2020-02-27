@@ -1,4 +1,9 @@
-import { InteractionMap, RichMiddleware, EventType } from "../../types";
+import {
+  InteractionMap,
+  RichMiddleware,
+  EventType,
+  RichEventData,
+} from "../../types";
 import { doesMatchFilter } from "../../../utils";
 
 export enum MouseInteractionType {
@@ -10,10 +15,10 @@ export enum MouseInteractionType {
 }
 
 /** Mouse mapper, generates actions from mouse events. */
-const mapMouse = (
-  map: InteractionMap<MouseInteractionType>,
+const mapMouse = <T = { [key: string]: any }, ID = string>(
+  map: InteractionMap<MouseInteractionType, ID, MouseEvent>,
   filter?: EventType | EventType[],
-): RichMiddleware => (data) => {
+): RichMiddleware<T, ID> => (data) => {
   if (
     data.device !== "mouse" ||
     !doesMatchFilter(data.eventType, filter) ||
@@ -27,7 +32,7 @@ const mapMouse = (
 
   if (!mappingFunction) return;
 
-  const action = mappingFunction(data);
+  const action = mappingFunction(data as RichEventData<ID, MouseEvent>);
   if (!action) return;
 
   if (data.actions) {

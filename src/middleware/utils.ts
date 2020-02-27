@@ -18,17 +18,15 @@ import {
 const defaultEventMap: {
   [type: string]: [DeviceType, EventType];
 } = {
-  DOMMouseScroll: ["wheel", "wheel"],
-  keydown: ["key", "down"],
-  keyup: ["key", "up"],
+  keydown: ["key", "start"],
+  keyup: ["key", "end"],
   mousedown: ["mouse", "start"],
   mousemove: ["mouse", "move"],
   mouseup: ["mouse", "end"],
-  mousewheel: ["wheel", "wheel"],
   touchend: ["touch", "end"],
   touchmove: ["touch", "move"],
   touchstart: ["touch", "start"],
-  wheel: ["wheel", "wheel"],
+  wheel: ["wheel", "move"],
 };
 export { defaultEventMap as eventMap };
 

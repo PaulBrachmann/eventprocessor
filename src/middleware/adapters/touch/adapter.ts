@@ -57,7 +57,7 @@ const touchAdapter = <
           },
         );
 
-        (pointers as PointerState<ID>["pointers"])[pointerId] = pointer;
+        (pointers as PointerState<ID>["pointers"])![pointerId] = pointer;
         currentPointers!.push(pointer);
       });
 

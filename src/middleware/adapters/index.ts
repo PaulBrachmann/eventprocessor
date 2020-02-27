@@ -1,6 +1,9 @@
+import keyAdapter from "./keyboard";
 import mouseAdapter from "./mouse";
+import touchAdapter from "./touch";
 
-export { mouseAdapter };
+export { keyAdapter, mouseAdapter, touchAdapter };
+export { areKeysPressed } from "./keyboard";
 export { mapMouse, MouseInteractionType, trackMousePosition } from "./mouse";
 
-export default () => [mouseAdapter()];
+export default () => [keyAdapter(), mouseAdapter(), touchAdapter()];
