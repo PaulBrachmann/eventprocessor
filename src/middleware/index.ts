@@ -8,6 +8,12 @@ export {
   touchAdapter,
   trackMousePosition,
 } from "./adapters";
+export {
+  default as gesturize,
+  mapGestures,
+  TransformData,
+  TransformGesture,
+} from "./gesturizer";
 export { default as Pointer, mapPointers } from "./pointer";
 export * from "./utils";
 

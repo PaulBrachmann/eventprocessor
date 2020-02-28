@@ -18,6 +18,9 @@ import {
 const defaultEventMap: {
   [type: string]: [DeviceType, EventType];
 } = {
+  gesturestart: ["_gesture", "start"],
+  gesturemove: ["_gesture", "move"],
+  gestureend: ["_gesture", "end"],
   keydown: ["key", "start"],
   keyup: ["key", "end"],
   mousedown: ["mouse", "start"],

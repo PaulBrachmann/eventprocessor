@@ -3,7 +3,7 @@ import Pointer from "./pointer";
 import { TransformGesture } from "./gesturizer";
 
 /** Devices that can dispatch events to the middleware chain. */
-export type DeviceType = "key" | "mouse" | "touch" | "wheel";
+export type DeviceType = "key" | "mouse" | "touch" | "wheel" | "_gesture";
 
 /**
  * An abstraction of event-types to provide a uniform
@@ -58,8 +58,9 @@ export interface RichEventData<ID = string, E extends EventLike = EventLike>
 /** Middleware using the opinionated RichEventData. */
 export type RichMiddleware<
   T = { [key: string]: any },
-  ID = string
-> = EventMiddleware<RichEventData<ID>, T>;
+  ID = string,
+  E extends EventLike = EventLike
+> = EventMiddleware<RichEventData<ID, E>, T>;
 
 /** Event processor state extension to capture the current pointers. */
 export interface PointerState<ID = string> {

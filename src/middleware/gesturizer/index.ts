@@ -1,16 +1,23 @@
-import { RichMiddleware, GestureState, PointerState } from "../types";
+import Pointer from "../pointer";
+import { GestureState, PointerState, RichMiddleware } from "../types";
 import TransformData from "./transformData";
 import TransformGesture from "./transformGesture";
-import Pointer from "../pointer";
 
 export { TransformData, TransformGesture };
+export { default as mapGestures } from "./mapper";
+
+export type GestureEvent<ID = string> = CustomEvent<{
+  context: { [key: string]: any };
+  id: ID;
+  transform: TransformData;
+}>;
 
 /** Returns a new gesture event. */
-export const createGestureEvent = <ID>(
+export const createGestureEvent = <ID = string>(
   type: string,
   gesture: TransformGesture,
   id: ID,
-) =>
+): GestureEvent<ID> =>
   new CustomEvent(type, {
     detail: {
       context: gesture.context,
