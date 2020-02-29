@@ -46,8 +46,27 @@ export interface IEventProcessor<
   /** Gets a value from the event procesor's state. */
   get<K extends keyof T>(key: K): T[K] | undefined;
 
+  /**
+   * Adds event listeners for the given event types to an element.
+   *
+   * @param eventTypes The event types
+   * @param element The element (defaults to `document`)
+   */
+  register(eventTypes: string[], element?: EventTarget): IEventProcessor<D, T>;
+
   /** Sets a value in the event processor's state. */
   set<K extends keyof T>(key: K, value: T[K]): IEventProcessor<D, T>;
+
+  /**
+   * Removes event listeners for the given event types from an element.
+   *
+   * @param eventTypes The event types
+   * @param element The element (defaults to `document`)
+   */
+  unregister(
+    eventTypes: string[],
+    element?: EventTarget,
+  ): IEventProcessor<D, T>;
 
   /** Updates a value in the event processor's state. */
   update<K extends keyof T>(

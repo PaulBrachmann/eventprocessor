@@ -60,8 +60,22 @@ export default class EventProcessor<
     return this.state[key];
   }
 
+  public register(eventTypes: string[], element: EventTarget = document) {
+    eventTypes.forEach((eventType) => {
+      element.addEventListener(eventType, this.dispatch);
+    });
+    return this;
+  }
+
   public set<K extends keyof T>(key: K, value: any) {
     this.state[key] = value;
+    return this;
+  }
+
+  public unregister(eventTypes: string[], element: EventTarget = document) {
+    eventTypes.forEach((eventType) => {
+      element.removeEventListener(eventType, this.dispatch);
+    });
     return this;
   }
 

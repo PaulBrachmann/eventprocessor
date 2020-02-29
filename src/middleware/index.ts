@@ -1,6 +1,8 @@
 export {
   default as adapters,
   areKeysPressed,
+  elementListenerTypes,
+  globalListenerTypes,
   keyAdapter,
   mouseAdapter,
   mapKeys,

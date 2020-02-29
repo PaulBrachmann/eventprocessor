@@ -45,6 +45,46 @@ describe("event processor", () => {
     ).toBe(undefined);
   });
 
+  it("should register event listeners", () => {
+    const element: EventTarget = {
+      addEventListener: jest.fn(),
+    } as any;
+    const processor = new EventProcessor();
+
+    processor.register(["mousedown", "touchstart"], element);
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(element.addEventListener).toHaveBeenCalledWith(
+      "mousedown",
+      processor.dispatch,
+    );
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(element.addEventListener).toHaveBeenCalledWith(
+      "touchstart",
+      processor.dispatch,
+    );
+  });
+
+  it("should unregister event listeners", () => {
+    const element: EventTarget = {
+      removeEventListener: jest.fn(),
+    } as any;
+    const processor = new EventProcessor();
+
+    processor.unregister(["mousedown", "touchstart"], element);
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(element.removeEventListener).toHaveBeenCalledWith(
+      "mousedown",
+      processor.dispatch,
+    );
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(element.removeEventListener).toHaveBeenCalledWith(
+      "touchstart",
+      processor.dispatch,
+    );
+  });
+
   it("should apply middleware", () => {
     const mock = jest.fn(() => {
       /* continue */

@@ -41,9 +41,13 @@ const gesturize = <
 
   const pointerMap = processor.get("pointers");
   if (!pointerMap) return;
-  const pointers = Object.values(pointerMap!);
+  const pointers = Object.values(
+    pointerMap as NonNullable<PointerState<ID>["pointers"]>,
+  );
 
-  let gestures = processor.get("gestures");
+  let gestures = processor.get("gestures") as NonNullable<
+    GestureState<ID>["gestures"]
+  >;
 
   switch (data.eventType) {
     case "start":
@@ -73,7 +77,7 @@ const gesturize = <
     case "move":
       if (!gestures) return;
       ids.forEach((id) => {
-        const gesture: TransformGesture | undefined = gestures![id];
+        const gesture: TransformGesture | undefined = gestures[id];
         if (!gesture) return;
 
         gesture.setTarget(
@@ -87,7 +91,7 @@ const gesturize = <
     case "end":
       if (!gestures) return;
       ids.forEach((id) => {
-        const gesture: TransformGesture | undefined = gestures![id];
+        const gesture: TransformGesture | undefined = gestures[id];
         if (!gesture) return;
 
         gesture.setTarget(
@@ -101,7 +105,7 @@ const gesturize = <
         if (currentPointers.length) {
           gesture.rebase(TransformData.fromPointers(currentPointers));
         } else {
-          delete gestures![id];
+          delete gestures[id];
         }
 
         // Dispatch end event
