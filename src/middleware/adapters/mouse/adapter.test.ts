@@ -5,26 +5,30 @@ import mouseAdapter from "./adapter";
 
 describe("mouseAdapter", () => {
   const processor = new EventProcessor<RichEventData, PointerState>();
-  const pointer = new Pointer(
-    "uuid",
-    {
-      clientX: 32,
-      clientY: 24,
-      event: new MouseEvent("mousedown", {
+  let pointer: Pointer<any>;
+
+  beforeEach(() => {
+    pointer = new Pointer(
+      "uuid",
+      {
         clientX: 32,
         clientY: 24,
-      }),
-      identifier: "mouse",
-    },
-    {
-      device: "mouse",
-      startTime: expect.anything(),
-      altKey: false,
-      ctrlKey: false,
-      mouseButton: 0,
-      shiftKey: false,
-    },
-  );
+        event: new MouseEvent("mousedown", {
+          clientX: 32,
+          clientY: 24,
+        }),
+        identifier: "mouse",
+      },
+      {
+        device: "mouse",
+        startTime: expect.anything(),
+        altKey: false,
+        ctrlKey: false,
+        mouseButton: 0,
+        shiftKey: false,
+      },
+    );
+  });
 
   it("should do nothing for an unclassified event", () => {
     const data: RichEventData = {
@@ -35,6 +39,8 @@ describe("mouseAdapter", () => {
     expect(mouseAdapter()(data, processor)).toBe(undefined);
 
     expect(processor.get("pointers")).toBe(undefined);
+    expect(data.pointers).toBe(undefined);
+    expect(data.unidentifiedPointers).toBe(undefined);
     expect(data.ids).toBe(undefined);
   });
 
@@ -49,6 +55,8 @@ describe("mouseAdapter", () => {
     expect(mouseAdapter()(data, processor)).toBe(undefined);
 
     expect(processor.get("pointers")).toBe(undefined);
+    expect(data.pointers).toBe(undefined);
+    expect(data.unidentifiedPointers).toBe(undefined);
     expect(data.ids).toBe(undefined);
   });
 
@@ -63,6 +71,8 @@ describe("mouseAdapter", () => {
     expect(mouseAdapter()(data, processor)).toBe(undefined);
 
     expect(processor.get("pointers")).toBe(undefined);
+    expect(data.pointers).toBe(undefined);
+    expect(data.unidentifiedPointers).toBe(undefined);
     expect(data.ids).toBe(undefined);
   });
 
@@ -77,6 +87,8 @@ describe("mouseAdapter", () => {
     expect(mouseAdapter()(data, processor)).toBe(undefined);
 
     expect(processor.get("pointers")).toEqual({ mouse: pointer });
+    expect(data.pointers).toEqual([pointer]);
+    expect(data.unidentifiedPointers).toBe(undefined);
     expect(data.ids).toEqual(["uuid"]);
   });
 
@@ -97,6 +109,8 @@ describe("mouseAdapter", () => {
       identifier: "mouse",
     };
     expect(processor.get("pointers")).toEqual({ mouse: pointer });
+    expect(data.pointers).toEqual([pointer]);
+    expect(data.unidentifiedPointers).toBe(undefined);
     expect(data.ids).toEqual(["uuid"]);
   });
 
@@ -110,7 +124,15 @@ describe("mouseAdapter", () => {
 
     expect(mouseAdapter()(data, processor)).toBe(undefined);
 
+    pointer.detail = {
+      clientX: 64,
+      clientY: 32,
+      event: new MouseEvent("mouseup", { clientX: 64, clientY: 32 }),
+      identifier: "mouse",
+    };
     expect(processor.get("pointers")).toEqual({});
+    expect(data.pointers).toEqual([pointer]);
+    expect(data.unidentifiedPointers).toBe(undefined);
     expect(data.ids).toEqual(["uuid"]);
   });
 
@@ -125,6 +147,30 @@ describe("mouseAdapter", () => {
     expect(mouseAdapter()(data, processor)).toBe(undefined);
 
     expect(processor.get("pointers")).toEqual({});
+    expect(data.pointers).toBe(undefined);
+    expect(data.unidentifiedPointers).toBe(undefined);
+    expect(data.ids).toBe(undefined);
+  });
+
+  it("should handle an unidentified pointer", () => {
+    const data: RichEventData = {
+      args: [],
+      device: "mouse",
+      event: new MouseEvent("mousemove", { clientX: 64, clientY: 32 }),
+      eventType: "move",
+    };
+
+    expect(mouseAdapter(true)(data, processor)).toBe(undefined);
+
+    pointer.id = undefined;
+    pointer.detail = {
+      clientX: 64,
+      clientY: 32,
+      event: new MouseEvent("mousemove", { clientX: 64, clientY: 32 }),
+      identifier: "mouse",
+    };
+    expect(processor.get("pointers")).toEqual({});
+    expect(data.unidentifiedPointers).toEqual([pointer]);
     expect(data.ids).toBe(undefined);
   });
 });

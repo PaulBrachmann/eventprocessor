@@ -54,16 +54,16 @@ export const classify = <T>(
 /**
  * Event logging middleware.
  *
- * @param unknown Should events without associated id(s) be printed?
- * @param production Should events be printed in production?
+ * @param handleUnidentified Should events without associated id(s) be printed?
+ * @param runInProduction Should events be printed in production?
  */
 export const log = (
-  unknown?: boolean,
-  production?: boolean,
+  handleUnidentified?: boolean,
+  runInProduction?: boolean,
 ): EventMiddleware => ({ event, ids }) => {
   if (
-    (unknown || ids !== undefined) &&
-    (production || process.env.NODE_ENV !== "production")
+    (handleUnidentified || ids !== undefined) &&
+    (runInProduction || process.env.NODE_ENV !== "production")
   ) {
     // eslint-disable-next-line no-console
     console.log(event);
@@ -73,13 +73,12 @@ export const log = (
 /**
  * Prevent default middleware.
  *
- * @param unknown Should events without associated id(s) be handled?
+ * @param handleUnidentified Should events without associated id(s) be handled?
  */
-export const preventDefault = (unknown?: boolean): EventMiddleware => ({
-  event,
-  ids,
-}) => {
-  if ((unknown || ids !== undefined) && event.cancelable) {
+export const preventDefault = (
+  handleUnidentified?: boolean,
+): EventMiddleware => ({ event, ids }) => {
+  if ((handleUnidentified || ids !== undefined) && event.cancelable) {
     event.preventDefault();
     event.stopPropagation();
   }

@@ -3,42 +3,48 @@ import { PointerState, RichMiddleware } from "../../types";
 
 export const pointerId = "mouse";
 
-/** Mouse adapter, generates & tracks pointer data for mouse events. */
+const buildPointerDetail = (event: MouseEvent) => ({
+  clientX: event.clientX,
+  clientY: event.clientY,
+  event,
+  identifier: pointerId,
+});
+
+const buildPointer = <ID = string>(id: ID, event: MouseEvent) =>
+  new Pointer<ID>(id, buildPointerDetail(event), {
+    device: "mouse",
+    startTime: event.timeStamp,
+
+    altKey: event.altKey,
+    ctrlKey: event.ctrlKey,
+    mouseButton: event.button,
+    shiftKey: event.shiftKey,
+  });
+
+/**
+ * Mouse adapter, generates & tracks pointer data for mouse events.
+ *
+ * @param handleUnidentified If set, events not associated to an entity are
+ * still recorded in `data.unidentifiedPointers`.
+ */
 const mouseAdapter = <
   ID = string,
   T extends PointerState<ID> = PointerState<ID>
->(): RichMiddleware<T, ID> => (data, processor) => {
+>(
+  handleUnidentified = false,
+): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device !== "mouse") return;
 
   const type = data.eventType;
   let pointers = processor.get("pointers");
-  let pointer: Pointer<ID> | undefined;
 
   if (type === "start") {
     // Get id from caller arguments
     const id = data.args[0];
 
     if (id !== undefined) {
-      const { event } = data;
       // Create pointer
-      pointer = new Pointer<ID>(
-        id,
-        {
-          clientX: (event as MouseEvent).clientX,
-          clientY: (event as MouseEvent).clientY,
-          event,
-          identifier: pointerId,
-        },
-        {
-          device: "mouse",
-          startTime: event.timeStamp,
-
-          altKey: (event as MouseEvent).altKey,
-          ctrlKey: (event as MouseEvent).ctrlKey,
-          mouseButton: (event as MouseEvent).button,
-          shiftKey: (event as MouseEvent).shiftKey,
-        },
-      );
+      const pointer = buildPointer(id, data.event as MouseEvent);
 
       // Write id & pointer to context
       data.ids = [id];
@@ -51,19 +57,11 @@ const mouseAdapter = <
     }
   } else if (pointers) {
     // Get registered pointer (if any)
-    pointer = pointers[pointerId];
+    const pointer = pointers[pointerId];
 
     if (pointer) {
-      if (type === "move") {
-        const { event } = data;
-        // Update pointer
-        pointer.detail = {
-          clientX: (event as MouseEvent).clientX,
-          clientY: (event as MouseEvent).clientY,
-          event,
-          identifier: pointerId,
-        };
-      }
+      // Update pointer
+      pointer.detail = buildPointerDetail(data.event as MouseEvent);
 
       // Write id & pointer to context
       data.ids = [pointer.id];
@@ -73,6 +71,12 @@ const mouseAdapter = <
         delete pointers[pointerId];
       }
     }
+  }
+
+  if (handleUnidentified && !data.ids) {
+    data.unidentifiedPointers = [
+      buildPointer(undefined, data.event as MouseEvent),
+    ];
   }
 };
 

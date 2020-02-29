@@ -3,6 +3,34 @@ import { PointerState, RichMiddleware } from "../../types";
 
 export const pointerIdPrefix = "t/";
 
+const buildPointerId = (touch: Touch) =>
+  `${pointerIdPrefix}${touch.identifier}`;
+
+const buildPointerDetail = (
+  touch: Touch,
+  identifier = buildPointerId(touch),
+) => ({
+  clientX: touch.clientX,
+  clientY: touch.clientY,
+  event: touch,
+  identifier,
+});
+
+const buildPointer = <ID = string>(
+  id: ID,
+  event: TouchEvent,
+  touch: Touch,
+  identifier = buildPointerId(touch),
+) =>
+  new Pointer<ID>(id, buildPointerDetail(touch, identifier), {
+    device: "touch",
+    startTime: event.timeStamp,
+
+    altKey: event.altKey,
+    ctrlKey: event.ctrlKey,
+    shiftKey: event.shiftKey,
+  });
+
 /** Iterates touches. */
 export const forEachTouch = (
   touches: TouchList,
@@ -37,25 +65,10 @@ const touchAdapter = <
 
       // Iterate changed touches
       forEachTouch((event as TouchEvent).changedTouches, (touch) => {
-        const pointerId = `${pointerIdPrefix}${touch.identifier}`;
+        const pointerId = buildPointerId(touch);
 
         // Create pointer
-        const pointer = new Pointer(
-          id,
-          {
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            event: touch,
-            identifier: pointerId,
-          },
-          {
-            device: "touch",
-            startTime: event.timeStamp,
-            altKey: (event as TouchEvent).altKey,
-            ctrlKey: (event as TouchEvent).ctrlKey,
-            shiftKey: (event as TouchEvent).shiftKey,
-          },
-        );
+        const pointer = buildPointer(id, event as TouchEvent, touch, pointerId);
 
         (pointers as PointerState<ID>["pointers"])![pointerId] = pointer;
         currentPointers!.push(pointer);
@@ -72,7 +85,7 @@ const touchAdapter = <
 
     // Iterate changed touches
     forEachTouch((data.event as TouchEvent).changedTouches, (touch) => {
-      const pointerId = `${pointerIdPrefix}${touch.identifier}`;
+      const pointerId = buildPointerId(touch);
 
       // Get registered pointer (if any)
       const pointer = (pointers as { [key: string]: Pointer<ID> })[pointerId];
@@ -83,12 +96,7 @@ const touchAdapter = <
 
         if (type === "move") {
           // Update pointer
-          pointer.detail = {
-            clientX: touch.clientX,
-            clientY: touch.clientY,
-            event: touch,
-            identifier: pointerId,
-          };
+          pointer.detail = buildPointerDetail(touch, pointerId);
         }
 
         // Get id & write to dedupe set
