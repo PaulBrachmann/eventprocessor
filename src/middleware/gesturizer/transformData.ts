@@ -106,6 +106,30 @@ class TransformData {
     this.rotate2d -= otherTransform.rotate2d;
     return this;
   }
+
+  /**
+   * Offsets `translateX`/`translateY` so that the given zoom target
+   * (e.g. mouse position) stays fixed in place with respect to the zoom.
+   *
+   * This eliminates any perceived displacement/shifting resulting from a zoom.
+   *
+   * @param zoomTarget The point to zoom around (e.g. mouse position).
+   * @param actualZoomCenterX The x-coordinate of the point the actual (DOM)
+   * scaling originates from (usually top left of the element)
+   * @param actualZoomCenterY The y-coordinate of the point the actual (DOM)
+   * scaling originates from (usually top left of the element)
+   */
+  public counterZoomOffset(
+    zoomTarget: TransformData,
+    actualZoomCenterX = 0,
+    actualZoomCenterY = 0,
+  ) {
+    this.translateX -=
+      (zoomTarget.translateX - actualZoomCenterX) * (this.scale - 1);
+    this.translateY -=
+      (zoomTarget.translateY - actualZoomCenterY) * (this.scale - 1);
+    return this;
+  }
 }
 
 export default TransformData;

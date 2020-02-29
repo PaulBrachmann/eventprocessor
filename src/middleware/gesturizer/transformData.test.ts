@@ -138,4 +138,24 @@ describe("TransformData", () => {
     expect(transformData2.rotate2d).toBe(90);
     expect(transformData2).toBe(transformData);
   });
+
+  it("should counter the perceived displacement from a zoom", () => {
+    expect(
+      new TransformData(0, 0, 2, 0).counterZoomOffset(new TransformData()),
+    ).toEqual(new TransformData(0, 0, 2, 0));
+
+    expect(
+      new TransformData(0, 0, 2, 0).counterZoomOffset(
+        new TransformData(128, 128),
+      ),
+    ).toEqual(new TransformData(-128, -128, 2, 0));
+
+    expect(
+      new TransformData(0, 0, 2, 0).counterZoomOffset(
+        new TransformData(128, 128),
+        256,
+        256,
+      ),
+    ).toEqual(new TransformData(128, 128, 2, 0));
+  });
 });
