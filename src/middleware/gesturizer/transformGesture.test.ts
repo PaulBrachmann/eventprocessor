@@ -10,11 +10,15 @@ describe.only("TransformGesture", () => {
     ).toEqual(new TransformData(0, 0, 1, 0));
 
     expect(
+      new TransformGesture(new TransformData(24, 256, 1, 0)).getTarget(),
+    ).toEqual(new TransformData(24, 256, 1, 0));
+
+    expect(
       new TransformGesture(new TransformData(), { key: "value" }).context.key,
     ).toBe("value");
   });
 
-  it("should set compute the offset to a new target", () => {
+  it("should compute the offset to a new target", () => {
     const gesture = new TransformGesture(new TransformData(0, 256, 1, 0));
     gesture.setTarget(new TransformData(64, 128, 4, -45));
     expect(gesture.getTransform()).toEqual(new TransformData(64, -128, 4, -45));

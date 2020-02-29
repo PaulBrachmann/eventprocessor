@@ -9,6 +9,7 @@ export { default as mapGestures } from "./mapper";
 export type GestureEvent<ID = string> = CustomEvent<{
   context: { [key: string]: any };
   id: ID;
+  target: TransformData;
   transform: TransformData;
 }>;
 
@@ -22,6 +23,7 @@ export const createGestureEvent = <ID = string>(
     detail: {
       context: gesture.context,
       id,
+      target: gesture.getTarget(),
       transform: gesture.getTransform(),
     },
   });

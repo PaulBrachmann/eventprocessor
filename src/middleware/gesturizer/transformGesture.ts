@@ -20,6 +20,11 @@ class TransformGesture {
     this.target.set(origin);
   }
 
+  /** Returns the gesture's target. */
+  public getTarget(): TransformData {
+    return this.target;
+  }
+
   /** Returns the transformation data resulting from the gesture. */
   public getTransform(): TransformData {
     return this.target
