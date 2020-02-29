@@ -12,7 +12,7 @@ import {
  * [`KeyboardEvent.key` values](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values)
  * and a mapping function that may return an action gerenated by the key combination.
  */
-const mapKeys = <T extends KeysPressedState = KeysPressedState, ID = string>(
+const mapKeys = <ID = string, T extends KeysPressedState = KeysPressedState>(
   ...bindings: { keys: string[]; mapper: MappingFunction<ID, KeyboardEvent> }[]
 ): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device !== "key" || data.eventType !== "start") return;

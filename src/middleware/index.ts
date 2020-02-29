@@ -7,8 +7,11 @@ export {
   mouseAdapter,
   mapKeys,
   mapMouse,
+  mapWheel,
+  MouseInteractionType,
   touchAdapter,
   trackMousePosition,
+  WheelInteractionType,
 } from "./adapters";
 export {
   default as gesturize,

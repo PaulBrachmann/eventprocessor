@@ -15,7 +15,7 @@ export enum MouseInteractionType {
 }
 
 /** Mouse mapper, generates actions from mouse events. */
-const mapMouse = <T = { [key: string]: any }, ID = string>(
+const mapMouse = <ID = string, T = { [key: string]: any }>(
   map: InteractionMap<MouseInteractionType, ID, MouseEvent>,
   filter?: EventType | EventType[],
 ): RichMiddleware<T, ID> => (data) => {
@@ -29,7 +29,6 @@ const mapMouse = <T = { [key: string]: any }, ID = string>(
 
   const mappingFunction =
     map[(data.event as MouseEvent).button as MouseInteractionType];
-
   if (!mappingFunction) return;
 
   const action = mappingFunction(data as RichEventData<ID, MouseEvent>);
