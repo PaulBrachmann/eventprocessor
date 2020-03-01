@@ -32,6 +32,7 @@ describe("touchAdapter", () => {
     pointer = new Pointer(
       "uuid",
       {
+        buttons: 1,
         clientX: 0,
         clientY: 0,
         event: createTouch(0, 0, 0),
@@ -49,6 +50,7 @@ describe("touchAdapter", () => {
     pointer2 = new Pointer(
       "uuid",
       {
+        buttons: 1,
         clientX: 64,
         clientY: 64,
         event: createTouch(1, 64, 64),
@@ -143,6 +145,7 @@ describe("touchAdapter", () => {
     expect(touchAdapter()(data, processor)).toBe(undefined);
 
     pointer.detail = {
+      buttons: 1,
       clientX: 64,
       clientY: 16,
       event: createTouch(0, 64, 16),
@@ -150,6 +153,7 @@ describe("touchAdapter", () => {
       pressure: 1,
     };
     pointer2.detail = {
+      buttons: 1,
       clientX: 32,
       clientY: 24,
       event: createTouch(1, 32, 24),
@@ -177,6 +181,8 @@ describe("touchAdapter", () => {
 
     expect(touchAdapter()(data, processor)).toBe(undefined);
 
+    pointer.detail.buttons = 0;
+    pointer2.detail.buttons = 0;
     pointer.detail.pressure = 0;
     pointer2.detail.pressure = 0;
     expect(processor.get("pointers")).toEqual({});

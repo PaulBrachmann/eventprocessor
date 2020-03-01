@@ -30,6 +30,7 @@ export interface PointerDetail {
   event?: EventLike | Touch;
   identifier: string;
 
+  buttons: number;
   clientX: number;
   clientY: number;
   pressure: number;

@@ -9,6 +9,7 @@ export {
   mapMouse,
   mapWheel,
   MouseInteractionType,
+  pointerAdapter,
   touchAdapter,
   trackMousePosition,
   WheelInteractionType,

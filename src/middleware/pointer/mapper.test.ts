@@ -34,7 +34,13 @@ describe("mapPointer", () => {
     data.pointers!.push(
       new Pointer(
         "uuid",
-        { clientX: 0, clientY: 0, identifier: "mouse", pressure: 1 },
+        {
+          buttons: 1,
+          clientX: 0,
+          clientY: 0,
+          identifier: "mouse",
+          pressure: 1,
+        },
         { device: "mouse", startTime: 0 },
       ),
     );

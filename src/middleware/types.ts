@@ -3,7 +3,14 @@ import Pointer from "./pointer";
 import { TransformGesture } from "./gesturizer";
 
 /** Devices that can dispatch events to the middleware chain. */
-export type DeviceType = "key" | "mouse" | "touch" | "wheel" | "_gesture";
+export type DeviceType =
+  | "key"
+  | "mouse"
+  | "touch"
+  | "pen"
+  | "wheel"
+  | "pointer"
+  | "_gesture";
 
 /**
  * An abstraction of event-types to provide a uniform

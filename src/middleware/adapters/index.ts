@@ -1,13 +1,18 @@
 import keyAdapter from "./keyboard";
-import mouseAdapter from "./mouse";
-import touchAdapter from "./touch";
+import pointerAdapter from "./pointer";
 
-export { keyAdapter, mouseAdapter, touchAdapter };
+export { keyAdapter, pointerAdapter };
 export { areKeysPressed, mapKeys } from "./keyboard";
-export { mapMouse, MouseInteractionType, trackMousePosition } from "./mouse";
+export {
+  default as mouseAdapter,
+  mapMouse,
+  MouseInteractionType,
+  trackMousePosition,
+} from "./mouse";
+export { default as touchAdapter } from "./touch";
 export { mapWheel, WheelInteractionType } from "./wheel";
 
-export default () => [keyAdapter(), mouseAdapter(), touchAdapter()];
+export default () => [keyAdapter(), pointerAdapter()];
 
 /**
  * The event types of all events that require global event listeners
@@ -18,14 +23,13 @@ export default () => [keyAdapter(), mouseAdapter(), touchAdapter()];
 export const globalListenerTypes = [
   "keydown",
   "keyup",
-  "mousemove",
-  "mouseup",
-  "touchmove",
-  "touchend",
+  "pointercancel",
+  "pointermove",
+  "pointerup",
 ];
 
 /**
  * The event types of all events that require event listeners on elements
  * associated with the manipulated entities for the adapters to work.
  */
-export const elementListenerTypes = ["mousedown", "touchstart"];
+export const elementListenerTypes = ["pointerdown"];

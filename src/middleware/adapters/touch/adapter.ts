@@ -11,6 +11,7 @@ const buildPointerDetail = (
   eventType = "move",
   identifier = buildPointerId(touch),
 ) => ({
+  buttons: eventType === "end" ? 0 : 1,
   clientX: touch.clientX,
   clientY: touch.clientY,
   event: touch,

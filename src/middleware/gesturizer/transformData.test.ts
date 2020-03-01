@@ -33,6 +33,7 @@ describe("TransformData", () => {
       new Pointer(
         "uuid",
         {
+          buttons: 1,
           clientX: 256,
           clientY: 64,
           identifier: "mouse",
@@ -51,12 +52,18 @@ describe("TransformData", () => {
     const transformData2 = TransformData.fromPointers([
       new Pointer(
         "uuid",
-        { clientX: 0, clientY: 0, identifier: "t/0", pressure: 1 },
+        { buttons: 1, clientX: 0, clientY: 0, identifier: "t/0", pressure: 1 },
         { device: "touch", startTime: 0 },
       ),
       new Pointer(
         "uuid",
-        { clientX: 128, clientY: 128, identifier: "t/1", pressure: 1 },
+        {
+          buttons: 1,
+          clientX: 128,
+          clientY: 128,
+          identifier: "t/1",
+          pressure: 1,
+        },
         { device: "touch", startTime: 0 },
       ),
     ]);
