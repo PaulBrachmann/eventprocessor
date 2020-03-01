@@ -26,6 +26,7 @@ const defaultEventMap: {
   mousedown: ["mouse", "start"],
   mousemove: ["mouse", "move"],
   mouseup: ["mouse", "end"],
+  touchcancel: ["touch", "end"],
   touchend: ["touch", "end"],
   touchmove: ["touch", "move"],
   touchstart: ["touch", "start"],

@@ -8,6 +8,7 @@ const buildPointerDetail = (event: MouseEvent) => ({
   clientY: event.clientY,
   event,
   identifier: pointerId,
+  pressure: event.buttons ? 1 : 0,
 });
 
 const buildPointer = <ID = string>(id: ID, event: MouseEvent) =>
@@ -17,7 +18,7 @@ const buildPointer = <ID = string>(id: ID, event: MouseEvent) =>
 
     altKey: event.altKey,
     ctrlKey: event.ctrlKey,
-    mouseButton: event.button,
+    button: event.button,
     shiftKey: event.shiftKey,
   });
 

@@ -25,38 +25,45 @@ const createTouchEvent = (type: string, changedTouches: Touch[]) =>
 
 describe("touchAdapter", () => {
   const processor = new EventProcessor<RichEventData, PointerState>();
-  const pointer = new Pointer(
-    "uuid",
-    {
-      clientX: 0,
-      clientY: 0,
-      event: createTouch(0, 0, 0),
-      identifier: "t/0",
-    },
-    {
-      device: "touch",
-      startTime: expect.anything(),
-      altKey: false,
-      ctrlKey: false,
-      shiftKey: false,
-    },
-  );
-  const pointer2 = new Pointer(
-    "uuid",
-    {
-      clientX: 64,
-      clientY: 64,
-      event: createTouch(1, 64, 64),
-      identifier: "t/1",
-    },
-    {
-      device: "touch",
-      startTime: expect.anything(),
-      altKey: false,
-      ctrlKey: false,
-      shiftKey: false,
-    },
-  );
+  let pointer: Pointer;
+  let pointer2: Pointer;
+
+  beforeEach(() => {
+    pointer = new Pointer(
+      "uuid",
+      {
+        clientX: 0,
+        clientY: 0,
+        event: createTouch(0, 0, 0),
+        identifier: "t/0",
+        pressure: 1,
+      },
+      {
+        device: "touch",
+        startTime: expect.anything(),
+        altKey: false,
+        ctrlKey: false,
+        shiftKey: false,
+      },
+    );
+    pointer2 = new Pointer(
+      "uuid",
+      {
+        clientX: 64,
+        clientY: 64,
+        event: createTouch(1, 64, 64),
+        identifier: "t/1",
+        pressure: 1,
+      },
+      {
+        device: "touch",
+        startTime: expect.anything(),
+        altKey: false,
+        ctrlKey: false,
+        shiftKey: false,
+      },
+    );
+  });
 
   it("should do nothing for an unclassified event", () => {
     const data: RichEventData = {
@@ -140,12 +147,14 @@ describe("touchAdapter", () => {
       clientY: 16,
       event: createTouch(0, 64, 16),
       identifier: "t/0",
+      pressure: 1,
     };
     pointer2.detail = {
       clientX: 32,
       clientY: 24,
       event: createTouch(1, 32, 24),
       identifier: "t/1",
+      pressure: 1,
     };
     expect(processor.get("pointers")).toEqual({
       "t/0": pointer,
@@ -159,12 +168,17 @@ describe("touchAdapter", () => {
     const data: RichEventData = {
       args: [],
       device: "touch",
-      event: createTouchEvent("touchend", [createTouch(0), createTouch(1)]),
+      event: createTouchEvent("touchend", [
+        createTouch(0, 0, 0),
+        createTouch(1, 64, 64),
+      ]),
       eventType: "end",
     };
 
     expect(touchAdapter()(data, processor)).toBe(undefined);
 
+    pointer.detail.pressure = 0;
+    pointer2.detail.pressure = 0;
     expect(processor.get("pointers")).toEqual({});
     expect(data.pointers).toEqual([pointer, pointer2]);
     expect(data.ids).toEqual(["uuid"]);

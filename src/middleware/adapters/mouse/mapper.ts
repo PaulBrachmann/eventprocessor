@@ -10,8 +10,8 @@ export enum MouseInteractionType {
   "LMB" = 0,
   "MMB" = 1,
   "RMB" = 2,
-  "back" = 3,
-  "forward" = 4,
+  "Back" = 3,
+  "Forward" = 4,
 }
 
 /** Mouse mapper, generates actions from mouse events. */

@@ -14,17 +14,19 @@ describe("mouseAdapter", () => {
         clientX: 32,
         clientY: 24,
         event: new MouseEvent("mousedown", {
+          buttons: 1,
           clientX: 32,
           clientY: 24,
         }),
         identifier: "mouse",
+        pressure: 1,
       },
       {
         device: "mouse",
         startTime: expect.anything(),
         altKey: false,
         ctrlKey: false,
-        mouseButton: 0,
+        button: 0,
         shiftKey: false,
       },
     );
@@ -33,7 +35,11 @@ describe("mouseAdapter", () => {
   it("should do nothing for an unclassified event", () => {
     const data: RichEventData = {
       args: [],
-      event: new MouseEvent("mousedown", { clientX: 0, clientY: 0 }),
+      event: new MouseEvent("mousedown", {
+        buttons: 1,
+        clientX: 0,
+        clientY: 0,
+      }),
     };
 
     expect(mouseAdapter()(data, processor)).toBe(undefined);
@@ -48,7 +54,11 @@ describe("mouseAdapter", () => {
     const data: RichEventData = {
       args: ["uuid"],
       device: "mouse",
-      event: new MouseEvent("mousedown", { clientX: 0, clientY: 0 }),
+      event: new MouseEvent("mousedown", {
+        buttons: 1,
+        clientX: 0,
+        clientY: 0,
+      }),
       eventType: "undef" as any,
     };
 
@@ -64,7 +74,11 @@ describe("mouseAdapter", () => {
     const data: RichEventData = {
       args: [],
       device: "mouse",
-      event: new MouseEvent("mousedown", { clientX: 0, clientY: 0 }),
+      event: new MouseEvent("mousedown", {
+        buttons: 1,
+        clientX: 0,
+        clientY: 0,
+      }),
       eventType: "start",
     };
 
@@ -80,7 +94,11 @@ describe("mouseAdapter", () => {
     const data: RichEventData = {
       args: ["uuid"],
       device: "mouse",
-      event: new MouseEvent("mousedown", { clientX: 32, clientY: 24 }),
+      event: new MouseEvent("mousedown", {
+        buttons: 1,
+        clientX: 32,
+        clientY: 24,
+      }),
       eventType: "start",
     };
 
@@ -96,7 +114,11 @@ describe("mouseAdapter", () => {
     const data: RichEventData = {
       args: [],
       device: "mouse",
-      event: new MouseEvent("mousemove", { clientX: 64, clientY: 32 }),
+      event: new MouseEvent("mousemove", {
+        buttons: 1,
+        clientX: 64,
+        clientY: 32,
+      }),
       eventType: "move",
     };
 
@@ -105,8 +127,13 @@ describe("mouseAdapter", () => {
     pointer.detail = {
       clientX: 64,
       clientY: 32,
-      event: new MouseEvent("mousemove", { clientX: 64, clientY: 32 }),
+      event: new MouseEvent("mousemove", {
+        buttons: 1,
+        clientX: 64,
+        clientY: 32,
+      }),
       identifier: "mouse",
+      pressure: 1,
     };
     expect(processor.get("pointers")).toEqual({ mouse: pointer });
     expect(data.pointers).toEqual([pointer]);
@@ -129,6 +156,7 @@ describe("mouseAdapter", () => {
       clientY: 32,
       event: new MouseEvent("mouseup", { clientX: 64, clientY: 32 }),
       identifier: "mouse",
+      pressure: 0,
     };
     expect(processor.get("pointers")).toEqual({});
     expect(data.pointers).toEqual([pointer]);
@@ -168,6 +196,7 @@ describe("mouseAdapter", () => {
       clientY: 32,
       event: new MouseEvent("mousemove", { clientX: 64, clientY: 32 }),
       identifier: "mouse",
+      pressure: 0,
     };
     expect(processor.get("pointers")).toEqual({});
     expect(data.unidentifiedPointers).toEqual([pointer]);

@@ -8,21 +8,24 @@ const buildPointerId = (touch: Touch) =>
 
 const buildPointerDetail = (
   touch: Touch,
+  eventType = "move",
   identifier = buildPointerId(touch),
 ) => ({
   clientX: touch.clientX,
   clientY: touch.clientY,
   event: touch,
   identifier,
+  pressure: eventType === "end" ? 0 : touch.force || 1,
 });
 
 const buildPointer = <ID = string>(
   id: ID,
   event: TouchEvent,
   touch: Touch,
+  eventType = "move",
   identifier = buildPointerId(touch),
 ) =>
-  new Pointer<ID>(id, buildPointerDetail(touch, identifier), {
+  new Pointer<ID>(id, buildPointerDetail(touch, eventType, identifier), {
     device: "touch",
     startTime: event.timeStamp,
 
@@ -68,7 +71,13 @@ const touchAdapter = <
         const pointerId = buildPointerId(touch);
 
         // Create pointer
-        const pointer = buildPointer(id, event as TouchEvent, touch, pointerId);
+        const pointer = buildPointer(
+          id,
+          event as TouchEvent,
+          touch,
+          type,
+          pointerId,
+        );
 
         (pointers as PointerState<ID>["pointers"])![pointerId] = pointer;
         currentPointers!.push(pointer);
@@ -94,10 +103,8 @@ const touchAdapter = <
         if (!currentPointers) currentPointers = [];
         currentPointers.push(pointer);
 
-        if (type === "move") {
-          // Update pointer
-          pointer.detail = buildPointerDetail(touch, pointerId);
-        }
+        // Update pointer
+        pointer.detail = buildPointerDetail(touch, type, pointerId);
 
         // Get id & write to dedupe set
         if (!ids) ids = new Set();

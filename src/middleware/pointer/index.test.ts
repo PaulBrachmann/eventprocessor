@@ -4,7 +4,7 @@ describe("pointer", () => {
   it("should create a new pointer", () => {
     const pointer = new Pointer(
       "uuid",
-      { clientX: 64, clientY: 128, identifier: "mouse" },
+      { clientX: 64, clientY: 128, identifier: "mouse", pressure: 1 },
       { device: "mouse", startTime: 0 },
     );
 
