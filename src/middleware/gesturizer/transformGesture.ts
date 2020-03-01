@@ -8,9 +8,6 @@ class TransformGesture {
   /** Current gesture target. */
   protected target: TransformData = new TransformData();
 
-  /** Static offset for internal corrections. */
-  protected offset: TransformData = new TransformData();
-
   constructor(
     /** The initial gesture target. */
     protected origin: TransformData = new TransformData(),
@@ -27,10 +24,7 @@ class TransformGesture {
 
   /** Returns the transformation data resulting from the gesture. */
   public getTransform(): TransformData {
-    return this.target
-      .clone()
-      .subtract(this.origin)
-      .add(this.offset);
+    return this.target.clone().subtract(this.origin);
   }
 
   /**
@@ -40,8 +34,7 @@ class TransformGesture {
    * @param origin The new origin
    */
   public rebase(origin: TransformData): TransformGesture {
-    this.offset.set(this.getTransform());
-    this.origin = origin;
+    this.origin = origin.clone().subtract(this.getTransform());
     return this.setTarget(origin);
   }
 
