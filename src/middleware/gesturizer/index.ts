@@ -1,5 +1,10 @@
 import Pointer from "../pointer";
-import { GestureState, PointerState, RichMiddleware } from "../types";
+import {
+  GestureState,
+  PointerState,
+  RichMiddleware,
+  RichEventData,
+} from "../types";
 import TransformData from "./transformData";
 import TransformGesture from "./transformGesture";
 
@@ -9,6 +14,7 @@ export { default as mapGestures } from "./mapper";
 export type GestureEvent<ID = string> = CustomEvent<{
   context: { [key: string]: any };
   id: ID;
+  origin: TransformData;
   target: TransformData;
   transform: TransformData;
 }>;
@@ -23,21 +29,41 @@ export const createGestureEvent = <ID = string>(
     detail: {
       context: gesture.context,
       id,
+      origin: gesture.getOrigin(),
       target: gesture.getTarget(),
       transform: gesture.getTransform(),
     },
   });
 
-/** Returns an array of only those pointers that belong to the given entity id. */
-export const filterPointers = <ID>(pointers: Pointer<ID>[], id: ID) =>
-  Object.values(pointers).filter((pointer) => pointer.id === id);
+/**
+ * Returns an array of only those pointers that belong to the
+ * given entity id and pass the predicate.
+ *
+ * @param pointers The initial array of pointers
+ * @param id The entity id
+ * @param predicate An optional predicate
+ */
+export const filterPointers = <ID>(
+  pointers: Pointer<ID>[],
+  id: ID,
+  predicate?: (pointer: Pointer<ID>) => boolean,
+) =>
+  Object.values(pointers).filter(
+    (pointer) => pointer.id === id && (!predicate || predicate(pointer)),
+  );
 
 /** Gesturizer, manages transform gestures and dispatches gesture events. */
 const gesturize = <
   ID extends number | string | symbol = string,
   T extends GestureState<ID> & PointerState<ID> = GestureState<ID> &
     PointerState<ID>
->(): RichMiddleware<T, ID> => (data, processor) => {
+>(
+  pointerPredicate?: (pointer: Pointer<ID>, data: RichEventData<ID>) => boolean,
+): RichMiddleware<T, ID> => (data, processor) => {
+  const boundPointerPredicate = pointerPredicate
+    ? (pointer: Pointer<ID>) => pointerPredicate(pointer, data)
+    : () => true;
+
   const { ids } = data;
   if (!ids || !data.pointers) return;
 
@@ -57,19 +83,26 @@ const gesturize = <
         let gesture: TransformGesture | undefined = gestures
           ? gestures[id]
           : undefined;
+
+        const filteredPointers = filterPointers(
+          pointers,
+          id,
+          boundPointerPredicate,
+        );
+        if (!filteredPointers.length) return;
+
         if (gesture) {
-          gesture.rebase(
-            TransformData.fromPointers(filterPointers(pointers, id)),
-          );
+          gesture.rebase(TransformData.fromPointers(filteredPointers));
         } else {
           gesture = new TransformGesture(
-            TransformData.fromPointers(filterPointers(pointers, id)),
+            TransformData.fromPointers(filteredPointers),
             { id },
           );
 
           // Write new gesture to state
           if (!gestures) gestures = {};
           gestures[id] = gesture;
+          processor.set("gestures", gestures);
 
           // Dispatch start event
           processor.dispatch(createGestureEvent("gesturestart", gesture, id));
@@ -82,9 +115,14 @@ const gesturize = <
         const gesture: TransformGesture | undefined = gestures[id];
         if (!gesture) return;
 
-        gesture.setTarget(
-          TransformData.fromPointers(filterPointers(pointers, id)),
+        const filteredPointers = filterPointers(
+          pointers,
+          id,
+          boundPointerPredicate,
         );
+        if (!filteredPointers.length) return;
+
+        gesture.setTarget(TransformData.fromPointers(filteredPointers));
 
         // Dispatch move event
         processor.dispatch(createGestureEvent("gesturemove", gesture, id));
@@ -96,16 +134,26 @@ const gesturize = <
         const gesture: TransformGesture | undefined = gestures[id];
         if (!gesture) return;
 
+        const currentPointers = filterPointers(
+          data.pointers!,
+          id,
+          boundPointerPredicate,
+        );
+        const filteredPointers = filterPointers(
+          pointers,
+          id,
+          boundPointerPredicate,
+        );
+        const filteredPointersCount = filteredPointers.length;
+        if (!(filteredPointersCount || currentPointers.length)) return;
+
         gesture.setTarget(
-          TransformData.fromPointers(
-            filterPointers([...pointers, ...data.pointers!], id),
-          ),
+          TransformData.fromPointers([...currentPointers, ...filteredPointers]),
         );
 
-        const currentPointers = filterPointers(pointers, id);
         // Check if more pointers are involved in this gesture
-        if (currentPointers.length) {
-          gesture.rebase(TransformData.fromPointers(currentPointers));
+        if (filteredPointersCount) {
+          gesture.rebase(TransformData.fromPointers(filteredPointers));
         } else {
           delete gestures[id];
         }

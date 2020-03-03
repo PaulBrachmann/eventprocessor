@@ -1,5 +1,4 @@
 import { EventLike } from "../../types";
-import { MouseInteractionType } from "../adapters/mouse";
 import { DeviceType } from "../types";
 
 /**
@@ -31,6 +30,8 @@ export interface PointerDetail {
   identifier: string;
 
   buttons: number;
+  /** Set if this pointer is being cancelled, e.g. due to a pointercancel event. */
+  cancel?: boolean;
   clientX: number;
   clientY: number;
   pressure: number;

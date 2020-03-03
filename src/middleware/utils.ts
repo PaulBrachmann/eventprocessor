@@ -119,7 +119,7 @@ export const forEvent = <T>(
   eventType?: string | string[],
 ): EventMiddleware<any, T> => (data) => {
   if (doesMatchFilter(data.event.type, eventType)) {
-    callback({ ...data });
+    callback(data.event);
   }
 };
 

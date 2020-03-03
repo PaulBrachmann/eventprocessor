@@ -26,16 +26,16 @@ describe.only("TransformGesture", () => {
 
   it.only("should rebase the gesture", () => {
     const gesture = new TransformGesture(new TransformData(128, 256, 1, 0))
-      .setTarget(new TransformData(128, 128, 1, 0))
-      .rebase(new TransformData(128, 256, 1, 0));
+      .setTarget(new TransformData(128, 128, 2, 0))
+      .rebase(new TransformData(128, 256, 0.5, 0));
 
-    expect(gesture.getTransform()).toEqual(new TransformData(0, -128, 1, 0));
+    expect(gesture.getTransform()).toEqual(new TransformData(0, -128, 2, 0));
 
     expect(
       gesture
         .rebase(new TransformData(64, 0, 256, 23))
         .setTarget(new TransformData(0, 0, 128, 23))
         .getTransform(),
-    ).toEqual(new TransformData(-64, -128, 0.5, 0));
+    ).toEqual(new TransformData(-64, -128, 1, 0));
   });
 });

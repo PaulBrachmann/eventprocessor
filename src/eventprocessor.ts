@@ -60,9 +60,13 @@ export default class EventProcessor<
     return this.state[key];
   }
 
-  public register(eventTypes: string[], element: EventTarget = document) {
+  public register(
+    eventTypes: string[],
+    element: EventTarget = document,
+    options = { passive: false },
+  ) {
     eventTypes.forEach((eventType) => {
-      element.addEventListener(eventType, this.dispatch);
+      element.addEventListener(eventType, this.dispatch, options);
     });
     return this;
   }

@@ -33,6 +33,7 @@ describe("touchAdapter", () => {
       "uuid",
       {
         buttons: 1,
+        cancel: false,
         clientX: 0,
         clientY: 0,
         event: createTouch(0, 0, 0),
@@ -51,6 +52,7 @@ describe("touchAdapter", () => {
       "uuid",
       {
         buttons: 1,
+        cancel: false,
         clientX: 64,
         clientY: 64,
         event: createTouch(1, 64, 64),
@@ -146,6 +148,7 @@ describe("touchAdapter", () => {
 
     pointer.detail = {
       buttons: 1,
+      cancel: false,
       clientX: 64,
       clientY: 16,
       event: createTouch(0, 64, 16),
@@ -154,6 +157,7 @@ describe("touchAdapter", () => {
     };
     pointer2.detail = {
       buttons: 1,
+      cancel: false,
       clientX: 32,
       clientY: 24,
       event: createTouch(1, 32, 24),

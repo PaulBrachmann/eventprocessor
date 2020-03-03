@@ -8,6 +8,7 @@ const buildPointerDetail = (
   identifier = buildPointerId(event),
 ) => ({
   buttons: event.buttons,
+  cancel: event.type === "pointercancel",
   clientX: event.clientX,
   clientY: event.clientY,
   event,

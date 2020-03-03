@@ -24,6 +24,7 @@ describe("pointerAdapter", () => {
       "uuid",
       {
         buttons: 1,
+        cancel: false,
         clientX: 32,
         clientY: 24,
         event: buildPointerEvent("pointerdown", {
@@ -151,6 +152,7 @@ describe("pointerAdapter", () => {
 
     pointer.detail = {
       buttons: 1,
+      cancel: false,
       clientX: 64,
       clientY: 32,
       event: buildPointerEvent("pointermove", {
@@ -186,6 +188,7 @@ describe("pointerAdapter", () => {
 
     pointer.detail = {
       buttons: 0,
+      cancel: false,
       clientX: 64,
       clientY: 32,
       event: buildPointerEvent("pointerup", {
@@ -243,6 +246,7 @@ describe("pointerAdapter", () => {
     pointer.id = undefined;
     pointer.detail = {
       buttons: 0,
+      cancel: false,
       clientX: 64,
       clientY: 32,
       event: buildPointerEvent("pointermove", {

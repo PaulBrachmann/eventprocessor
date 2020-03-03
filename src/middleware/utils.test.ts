@@ -141,13 +141,13 @@ describe("forEvent", () => {
   it("should execute side effects for all events", () => {
     expect(forEvent(callback)(data, processor)).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith(data);
+    expect(callback).toHaveBeenCalledWith(data.event);
   });
 
   it("should execute side effects for a given event type", () => {
     expect(forEvent(callback, "type")(data, processor)).toBe(undefined);
     expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith(data);
+    expect(callback).toHaveBeenCalledWith(data.event);
   });
 
   it("should not execute side effects for a different event type than given", () => {

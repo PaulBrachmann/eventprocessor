@@ -11,12 +11,12 @@ const mapGestures = <
     data: RichEventData<ID, GestureEvent<ID>>,
   ) => Action | void | undefined,
   filter?: EventType | EventType[],
-): RichMiddleware<T, ID, GestureEvent<ID>> => (data) => {
+): RichMiddleware<T, ID> => (data) => {
   if (data.device !== "_gesture" || !doesMatchFilter(data.eventType, filter)) {
     return;
   }
 
-  const action = mappingFunction(data);
+  const action = mappingFunction(data as RichEventData<ID, GestureEvent<ID>>);
 
   if (!action) return;
 

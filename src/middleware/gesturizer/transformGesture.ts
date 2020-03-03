@@ -17,6 +17,11 @@ class TransformGesture {
     this.target.set(origin);
   }
 
+  /** Returns the gesture's origin. */
+  public getOrigin(): TransformData {
+    return this.origin;
+  }
+
   /** Returns the gesture's target. */
   public getTarget(): TransformData {
     return this.target;

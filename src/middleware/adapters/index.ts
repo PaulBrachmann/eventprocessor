@@ -26,6 +26,7 @@ export const globalListenerTypes = [
   "pointercancel",
   "pointermove",
   "pointerup",
+  "wheel",
 ];
 
 /**
