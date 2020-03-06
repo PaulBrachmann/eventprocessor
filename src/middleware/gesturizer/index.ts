@@ -52,12 +52,20 @@ export const filterPointers = <ID>(
     (pointer) => pointer.id === id && (!predicate || predicate(pointer)),
   );
 
-/** Gesturizer, manages transform gestures and dispatches gesture events. */
+/**
+ * Gesturizer, manages transform gestures and dispatches gesture events.
+ *
+ * @param splitRebaseEvents If set, ends the current gesture and starts a new one
+ * if its pointers change. This is usually needed if the UI that applies resulting
+ * transformation data needs to support zooming to a vanishing point.
+ * @param pointerPredicate Used to filter the processed pointers.
+ */
 const gesturize = <
   ID extends number | string | symbol = string,
   T extends GestureState<ID> & PointerState<ID> = GestureState<ID> &
     PointerState<ID>
 >(
+  splitRebaseEvents = true,
   pointerPredicate?: (pointer: Pointer<ID>, data: RichEventData<ID>) => boolean,
 ): RichMiddleware<T, ID> => (data, processor) => {
   const boundPointerPredicate = pointerPredicate
@@ -92,7 +100,19 @@ const gesturize = <
         if (!filteredPointers.length) return;
 
         if (gesture) {
-          gesture.rebase(TransformData.fromPointers(filteredPointers));
+          if (splitRebaseEvents) {
+            processor.dispatch(createGestureEvent("gestureend", gesture, id));
+
+            gesture = new TransformGesture(
+              TransformData.fromPointers(filteredPointers),
+              { id },
+            );
+
+            gestures[id] = gesture;
+            processor.dispatch(createGestureEvent("gesturestart", gesture, id));
+          } else {
+            gesture.rebase(TransformData.fromPointers(filteredPointers));
+          }
         } else {
           gesture = new TransformGesture(
             TransformData.fromPointers(filteredPointers),
@@ -131,7 +151,7 @@ const gesturize = <
     case "end":
       if (!gestures) return;
       ids.forEach((id) => {
-        const gesture: TransformGesture | undefined = gestures[id];
+        let gesture: TransformGesture | undefined = gestures[id];
         if (!gesture) return;
 
         const currentPointers = filterPointers(
@@ -153,7 +173,19 @@ const gesturize = <
 
         // Check if more pointers are involved in this gesture
         if (filteredPointersCount) {
-          gesture.rebase(TransformData.fromPointers(filteredPointers));
+          if (splitRebaseEvents) {
+            processor.dispatch(createGestureEvent("gestureend", gesture, id));
+
+            gesture = new TransformGesture(
+              TransformData.fromPointers(filteredPointers),
+              { id },
+            );
+
+            gestures[id] = gesture;
+            processor.dispatch(createGestureEvent("gesturestart", gesture, id));
+          } else {
+            gesture.rebase(TransformData.fromPointers(filteredPointers));
+          }
         } else {
           delete gestures[id];
         }
