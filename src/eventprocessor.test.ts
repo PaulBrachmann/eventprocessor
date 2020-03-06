@@ -57,11 +57,13 @@ describe("event processor", () => {
     expect(element.addEventListener).toHaveBeenCalledWith(
       "mousedown",
       processor.dispatch,
+      { passive: false },
     );
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(element.addEventListener).toHaveBeenCalledWith(
       "touchstart",
       processor.dispatch,
+      { passive: false },
     );
   });
 
