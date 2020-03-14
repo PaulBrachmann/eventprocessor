@@ -20,21 +20,24 @@ const mapKeys = <ID = string, T extends KeysPressedState = KeysPressedState>(
   const keysPressed = processor.get("keysPressed");
   if (!keysPressed) return;
 
-  bindings.forEach((binding) => {
-    if (
+  const matchingBinding = bindings.find(
+    (binding) =>
       binding.keys.includes((data.event as KeyboardEvent).key) &&
-      !~binding.keys.findIndex((key) => !keysPressed[key])
-    ) {
-      const action = binding.mapper(data as RichEventData<ID, KeyboardEvent>);
-      if (!action) return;
+      !~binding.keys.findIndex((key) => !keysPressed[key]),
+  );
 
-      if (data.actions) {
-        data.actions.push(action);
-      } else {
-        data.actions = [action];
-      }
+  if (matchingBinding) {
+    const action = matchingBinding.mapper(
+      data as RichEventData<ID, KeyboardEvent>,
+    );
+    if (!action) return;
+
+    if (data.actions) {
+      data.actions.push(action);
+    } else {
+      data.actions = [action];
     }
-  });
+  }
 };
 
 export default mapKeys;

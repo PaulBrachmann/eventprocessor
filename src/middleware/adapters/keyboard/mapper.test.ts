@@ -6,6 +6,7 @@ describe("mapKeys", () => {
   const processor = new EventProcessor<RichEventData, KeysPressedState>();
   let data: RichEventData;
   const mapper = () => ({ type: "test" });
+  const mapper2 = () => ({ type: "test2" });
 
   beforeEach(() => {
     processor.set("keysPressed", { b: true, Control: true, "+": true });
@@ -55,5 +56,15 @@ describe("mapKeys", () => {
       undefined,
     );
     expect(data.actions).toEqual([{ type: "test" }]);
+  });
+
+  it("should only trigger the first match", () => {
+    expect(
+      mapKeys(
+        { keys: ["b"], mapper: mapper2 },
+        { keys: ["Control", "b"], mapper },
+      )(data, processor),
+    ).toBe(undefined);
+    expect(data.actions).toEqual([{ type: "test2" }]);
   });
 });
