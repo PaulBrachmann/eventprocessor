@@ -1,9 +1,12 @@
 import EventProcessor from "../../../eventprocessor";
-import { KeysPressedState, RichEventData } from "../../types";
+import { KeysPressedState, RichEventData, RichEventState } from "../../types";
 import mapKeys from "./mapper";
 
 describe("mapKeys", () => {
-  const processor = new EventProcessor<RichEventData, KeysPressedState>();
+  const processor = new EventProcessor<
+    RichEventData,
+    RichEventState & KeysPressedState
+  >();
   let data: RichEventData;
   const mapper = () => ({ type: "test" });
   const mapper2 = () => ({ type: "test2" });

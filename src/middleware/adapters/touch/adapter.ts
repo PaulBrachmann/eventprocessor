@@ -1,5 +1,6 @@
 import Pointer from "../../pointer";
-import { PointerState, RichMiddleware } from "../../types";
+import { PointerState, RichEventState, RichMiddleware } from "../../types";
+import { preventDefaultHelper } from "../../utils";
 
 export const pointerIdPrefix = "t/";
 
@@ -52,7 +53,8 @@ export const forEachTouch = (
 /** Touch adapter, generates & tracks pointer data for touch events. */
 const touchAdapter = <
   ID = string,
-  T extends PointerState<ID> = PointerState<ID>
+  T extends RichEventState & PointerState<ID> = RichEventState &
+    PointerState<ID>
 >(): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device !== "touch") return;
 
@@ -68,6 +70,8 @@ const touchAdapter = <
       const { event } = data;
       if (!pointers) pointers = {};
       currentPointers = [];
+
+      preventDefaultHelper(event, processor);
 
       // Iterate changed touches
       forEachTouch((event as TouchEvent).changedTouches, (touch) => {
@@ -95,6 +99,7 @@ const touchAdapter = <
   } else if (pointers) {
     const { event } = data;
     let ids: Set<ID> | undefined;
+    let isRecognized = false;
 
     // Iterate changed touches
     forEachTouch((event as TouchEvent).changedTouches, (touch) => {
@@ -104,6 +109,11 @@ const touchAdapter = <
       const pointer = (pointers as { [key: string]: Pointer<ID> })[pointerId];
 
       if (pointer) {
+        if (!isRecognized) {
+          preventDefaultHelper(event, processor);
+          isRecognized = true;
+        }
+
         if (!currentPointers) currentPointers = [];
         currentPointers.push(pointer);
 

@@ -1,5 +1,11 @@
 import Pointer from "../../pointer";
-import { PointerState, RichMiddleware, DeviceType } from "../../types";
+import {
+  DeviceType,
+  PointerState,
+  RichEventState,
+  RichMiddleware,
+} from "../../types";
+import { preventDefaultHelper } from "../../utils";
 
 const buildPointerId = (event: PointerEvent) => `${event.pointerId}`;
 
@@ -39,7 +45,8 @@ const buildPointer = <ID = string>(
  */
 const pointerAdapter = <
   ID = string,
-  T extends PointerState<ID> = PointerState<ID>
+  T extends RichEventState & PointerState<ID> = RichEventState &
+    PointerState<ID>
 >(
   handleUnidentified = false,
 ): RichMiddleware<T, ID> => (data, processor) => {
@@ -53,6 +60,8 @@ const pointerAdapter = <
     const id = data.args[0];
 
     if (id !== undefined) {
+      preventDefaultHelper(data.event, processor);
+
       // Create pointer
       const pointer = buildPointer(id, data.event as PointerEvent);
 
@@ -72,6 +81,8 @@ const pointerAdapter = <
     const pointer = pointers[buildPointerId(data.event as PointerEvent)];
 
     if (pointer) {
+      preventDefaultHelper(data.event, processor);
+
       // Update pointer
       pointer.detail = buildPointerDetail(data.event as PointerEvent);
 
@@ -86,6 +97,7 @@ const pointerAdapter = <
   }
 
   if (handleUnidentified && !data.ids) {
+    preventDefaultHelper(data.event, processor);
     data.unidentifiedPointers = [
       buildPointer(undefined, data.event as PointerEvent),
     ];

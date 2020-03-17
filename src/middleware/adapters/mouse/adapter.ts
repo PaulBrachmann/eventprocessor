@@ -1,5 +1,6 @@
 import Pointer from "../../pointer";
-import { PointerState, RichMiddleware } from "../../types";
+import { PointerState, RichEventState, RichMiddleware } from "../../types";
+import { preventDefaultHelper } from "../../utils";
 
 export const pointerId = "mouse";
 
@@ -31,7 +32,8 @@ const buildPointer = <ID = string>(id: ID, event: MouseEvent) =>
  */
 const mouseAdapter = <
   ID = string,
-  T extends PointerState<ID> = PointerState<ID>
+  T extends RichEventState & PointerState<ID> = RichEventState &
+    PointerState<ID>
 >(
   handleUnidentified = false,
 ): RichMiddleware<T, ID> => (data, processor) => {
@@ -45,6 +47,8 @@ const mouseAdapter = <
     const id = data.args[0];
 
     if (id !== undefined) {
+      preventDefaultHelper(data.event, processor);
+
       // Create pointer
       const pointer = buildPointer(id, data.event as MouseEvent);
 
@@ -62,6 +66,8 @@ const mouseAdapter = <
     const pointer = pointers[pointerId];
 
     if (pointer) {
+      preventDefaultHelper(data.event, processor);
+
       // Update pointer
       pointer.detail = buildPointerDetail(data.event as MouseEvent);
 
@@ -76,6 +82,7 @@ const mouseAdapter = <
   }
 
   if (handleUnidentified && !data.ids) {
+    preventDefaultHelper(data.event, processor);
     data.unidentifiedPointers = [
       buildPointer(undefined, data.event as MouseEvent),
     ];

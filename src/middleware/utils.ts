@@ -11,6 +11,7 @@ import {
   DeviceType,
   EventType,
   RichEventData,
+  RichEventState,
   RichMiddleware,
 } from "./types";
 
@@ -72,6 +73,23 @@ export const log = (
   ) {
     // eslint-disable-next-line no-console
     console.log(event);
+  }
+};
+
+/**
+ * Calls preventDefault & stopPropagation on the given event
+ * if `preventDefault` is set in the processor's state.
+ *
+ * @param event The event
+ * @param processor The event processor
+ */
+export const preventDefaultHelper = <D extends EventData = EventData>(
+  event: EventLike,
+  processor: IEventProcessor<D, RichEventState>,
+) => {
+  if (processor.get("preventDefault")) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 };
 

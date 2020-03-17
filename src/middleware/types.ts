@@ -70,10 +70,18 @@ export interface RichEventData<ID = string, E extends EventLike = EventLike>
 
 /** Middleware using the opinionated RichEventData. */
 export type RichMiddleware<
-  T = { [key: string]: any },
+  T extends RichEventState = { [key: string]: any },
   ID = string,
   E extends EventLike = EventLike
 > = EventMiddleware<RichEventData<ID, E>, T>;
+
+/**
+ * An extended EventProcessor state interface.
+ * Most of the pre-built middleware assumes this opinionated state structure.
+ */
+export interface RichEventState {
+  preventDefault?: boolean;
+}
 
 /** Event processor state extension to capture the current pointers. */
 export interface PointerState<ID = string> {

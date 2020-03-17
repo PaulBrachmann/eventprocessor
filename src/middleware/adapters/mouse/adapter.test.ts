@@ -1,10 +1,13 @@
 import EventProcessor from "../../../eventprocessor";
 import Pointer from "../../pointer";
-import { PointerState, RichEventData } from "../../types";
+import { PointerState, RichEventData, RichEventState } from "../../types";
 import mouseAdapter from "./adapter";
 
 describe("mouseAdapter", () => {
-  const processor = new EventProcessor<RichEventData, PointerState>();
+  const processor = new EventProcessor<
+    RichEventData,
+    RichEventState & PointerState
+  >();
   let pointer: Pointer<any>;
 
   beforeEach(() => {

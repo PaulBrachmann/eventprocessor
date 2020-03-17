@@ -1,7 +1,6 @@
 import EventProcessor from "../../../eventprocessor";
 import Pointer from "../../pointer";
-import { PointerState, RichEventData } from "../../types";
-
+import { PointerState, RichEventData, RichEventState } from "../../types";
 import touchAdapter from "./adapter";
 
 const createTouch = (identifier: number, clientX = 0, clientY = 0): Touch =>
@@ -24,7 +23,10 @@ const createTouchEvent = (type: string, changedTouches: Touch[]) =>
   });
 
 describe("touchAdapter", () => {
-  const processor = new EventProcessor<RichEventData, PointerState>();
+  const processor = new EventProcessor<
+    RichEventData,
+    RichEventState & PointerState
+  >();
   let pointer: Pointer;
   let pointer2: Pointer;
 

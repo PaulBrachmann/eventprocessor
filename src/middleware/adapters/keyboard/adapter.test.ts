@@ -1,9 +1,12 @@
 import EventProcessor from "../../../eventprocessor";
-import { KeysPressedState, RichEventData } from "../../types";
+import { KeysPressedState, RichEventData, RichEventState } from "../../types";
 import keyAdapter from "./adapter";
 
 describe("keyAdapter", () => {
-  const processor = new EventProcessor<RichEventData, KeysPressedState>();
+  const processor = new EventProcessor<
+    RichEventData,
+    RichEventState & KeysPressedState
+  >();
 
   beforeEach(() => {
     processor.set("keysPressed", undefined);

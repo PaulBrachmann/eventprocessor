@@ -2,8 +2,10 @@ import {
   KeysPressedState,
   MappingFunction,
   RichEventData,
+  RichEventState,
   RichMiddleware,
 } from "../../types";
+import { preventDefaultHelper } from "../../utils";
 
 /**
  * Keyboard mapper, generates actions from key events.
@@ -12,7 +14,11 @@ import {
  * [`KeyboardEvent.key` values](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values)
  * and a mapping function that may return an action gerenated by the key combination.
  */
-const mapKeys = <ID = string, T extends KeysPressedState = KeysPressedState>(
+const mapKeys = <
+  ID = string,
+  T extends RichEventState & KeysPressedState = RichEventState &
+    KeysPressedState
+>(
   ...bindings: { keys: string[]; mapper: MappingFunction<ID, KeyboardEvent> }[]
 ): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device !== "key" || data.eventType !== "start") return;
@@ -27,6 +33,8 @@ const mapKeys = <ID = string, T extends KeysPressedState = KeysPressedState>(
   );
 
   if (matchingBinding) {
+    preventDefaultHelper(data.event, processor);
+
     const action = matchingBinding.mapper(
       data as RichEventData<ID, KeyboardEvent>,
     );

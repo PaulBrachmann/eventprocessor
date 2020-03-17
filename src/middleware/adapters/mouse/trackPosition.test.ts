@@ -1,9 +1,12 @@
 import EventProcessor from "../../../eventprocessor";
-import { RichEventData, MousePositionState } from "../../types";
+import { MousePositionState, RichEventData, RichEventState } from "../../types";
 import trackMousePosition from "./trackPosition";
 
 describe("trackMousePosition", () => {
-  const processor = new EventProcessor<RichEventData, MousePositionState>();
+  const processor = new EventProcessor<
+    RichEventData,
+    RichEventState & MousePositionState
+  >();
   let data: RichEventData;
 
   beforeEach(() => {

@@ -2,8 +2,9 @@ import Pointer from "../pointer";
 import {
   GestureState,
   PointerState,
-  RichMiddleware,
   RichEventData,
+  RichEventState,
+  RichMiddleware,
 } from "../types";
 import TransformData from "./transformData";
 import TransformGesture from "./transformGesture";
@@ -71,8 +72,9 @@ export const filterPointers = <ID>(
  */
 const gesturize = <
   ID extends number | string | symbol = string,
-  T extends GestureState<ID> & PointerState<ID> = GestureState<ID> &
-    PointerState<ID>
+  T extends RichEventState &
+    GestureState<ID> &
+    PointerState<ID> = RichEventState & GestureState<ID> & PointerState<ID>
 >(
   splitRebaseEvents = true,
   pointerPredicate?: (pointer: Pointer<ID>, data: RichEventData<ID>) => boolean,

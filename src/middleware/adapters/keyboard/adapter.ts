@@ -1,9 +1,10 @@
-import { KeysPressedState, RichMiddleware } from "../../types";
+import { KeysPressedState, RichEventState, RichMiddleware } from "../../types";
 
 /** Keyboard adapter, writes the the currently pressed keys to the event processor's state. */
 const keyAdapter = <
   ID = string,
-  T extends KeysPressedState = KeysPressedState
+  T extends RichEventState & KeysPressedState = RichEventState &
+    KeysPressedState
 >(): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device !== "key") return;
 

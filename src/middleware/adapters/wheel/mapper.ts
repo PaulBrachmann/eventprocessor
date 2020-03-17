@@ -1,4 +1,5 @@
 import { RichMiddleware, InteractionMap, RichEventData } from "../../types";
+import { preventDefaultHelper } from "../../utils";
 
 export enum WheelInteractionType {
   "Up" = 0,
@@ -9,8 +10,10 @@ export enum WheelInteractionType {
 /** Wheel mapper, generates actions from wheel interactions. */
 const mapWheel = <ID = string, T = { [key: string]: any }>(
   map: InteractionMap<WheelInteractionType, ID, WheelEvent>,
-): RichMiddleware<T, ID> => (data) => {
+): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device !== "wheel") return;
+
+  preventDefaultHelper(data.event, processor);
 
   const mappingFunction =
     map[
