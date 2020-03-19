@@ -12,7 +12,10 @@ export {
 export { default as touchAdapter } from "./touch";
 export { mapWheel, WheelInteractionType } from "./wheel";
 
-export default () => [keyAdapter(), pointerAdapter()];
+export default (handleUnidentified?: boolean) => [
+  keyAdapter(),
+  pointerAdapter(handleUnidentified),
+];
 
 /**
  * The event types of all events that require global event listeners
