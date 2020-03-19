@@ -21,7 +21,7 @@ export {
   TransformGesture,
 } from "./gesturizer";
 export { getZoomToCursorDelta, getZoomToCursorTransform } from "./helpers";
-export { default as Pointer, mapPointers } from "./pointer";
+export { default as Pointer, mapHoverPointers, mapPointers } from "./pointer";
 export * from "./utils";
 
 export * from "./types";

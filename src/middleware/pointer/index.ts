@@ -56,4 +56,4 @@ class Pointer<ID = string> {
 }
 
 export default Pointer;
-export { default as mapPointers } from "./mapper";
+export { default as mapPointers, mapHoverPointers } from "./mapper";

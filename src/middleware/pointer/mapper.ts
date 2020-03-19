@@ -26,3 +26,28 @@ const mapPointers = (
 };
 
 export default mapPointers;
+
+/** Hover pointer mapper, generates actions from pointers in a hovering state. */
+export const mapHoverPointers = (
+  mappingFunction: (
+    pointer: Pointer<undefined>,
+    data: RichEventData,
+  ) => Action | void | undefined,
+): RichMiddleware => (data) => {
+  if (!data.unidentifiedPointers || data.eventType !== "move") return;
+
+  data.unidentifiedPointers.forEach((pointer) => {
+    const { buttons } = pointer.detail.event as MouseEvent;
+    if (buttons === undefined || buttons === 0) {
+      const action = mappingFunction(pointer, data);
+
+      if (!action) return;
+
+      if (data.actions) {
+        data.actions.push(action);
+      } else {
+        data.actions = [action];
+      }
+    }
+  });
+};
