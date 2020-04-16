@@ -1,7 +1,7 @@
 import { KeysPressedState, RichEventState, RichMiddleware } from "../../types";
+import { deriveEvent } from "../../../utils";
 
-const deriveCtrlKeyEvent = (event: KeyboardEvent) => ({
-  ...event,
+const ctrlEventOverride = (event: KeyboardEvent) => ({
   code: event.location === 2 ? "ControlRight" : "ControlLeft",
   key: "Control",
   which: 17,
@@ -32,9 +32,7 @@ const keyAdapter = <
     }
 
     if (options?.cmdIsCtrl && event.key === cmdKey) {
-      processor.dispatch(
-        new KeyboardEvent(event.type, deriveCtrlKeyEvent(event)),
-      );
+      processor.dispatch(deriveEvent(event, ctrlEventOverride(event)));
     }
 
     return keysPressed;

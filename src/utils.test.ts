@@ -1,4 +1,4 @@
-import { flattenArray, doesMatchFilter } from "./utils";
+import { flattenArray, doesMatchFilter, deriveEvent } from "./utils";
 
 describe("flattenArray", () => {
   it("should keep flat arrays flat", () => {
@@ -38,5 +38,25 @@ describe("doesMatchFilter", () => {
   it("should return false if the element is not included in the filter array", () => {
     expect(doesMatchFilter(0, [1, 2, 3])).toBe(false);
     expect(doesMatchFilter("test", [])).toBe(false);
+  });
+});
+
+describe("deriveEvent", () => {
+  it("should clone an event", () => {
+    const originalEvent = new KeyboardEvent("keydown", {
+      location: 2,
+      key: "Meta",
+    });
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    originalEvent.preventDefault = jest.fn();
+
+    const derivedEvent = deriveEvent(originalEvent, { key: "Control" });
+    derivedEvent.preventDefault();
+
+    expect(derivedEvent).not.toBe(originalEvent);
+    expect(derivedEvent.location).toBe(2);
+    expect(derivedEvent.key).toBe("Control");
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(originalEvent.preventDefault).toHaveBeenCalled();
   });
 });
