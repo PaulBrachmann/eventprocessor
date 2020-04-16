@@ -1,5 +1,13 @@
+import { GestureEvent } from "./middleware/gesturizer";
+
+export interface EventMap extends DocumentEventMap, HTMLElementEventMap {
+  gesturestart: GestureEvent;
+  gesturemove: GestureEvent;
+  gestureend: GestureEvent;
+}
+
 /* Event-like interface matching native events & React's synthetic events */
-export interface EventLike {
+export interface EventLike<E extends string = string> {
   bubbles: boolean;
   cancelable: boolean;
   currentTarget: EventTarget | null;
@@ -11,7 +19,7 @@ export interface EventLike {
   stopPropagation: () => void;
   target: EventTarget | null;
   timeStamp: number;
-  type: string;
+  type: E;
 }
 
 /** Event processor data interface (passed to middleware). */

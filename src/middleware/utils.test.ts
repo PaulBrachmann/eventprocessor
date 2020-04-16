@@ -19,10 +19,10 @@ beforeEach(() => {
 });
 
 describe("classify", () => {
-  const classifier = classify({ type: ["mouse", "start"] });
+  const classifier = classify({ mousedown: ["mouse", "start"] });
 
   it("should classify events", () => {
-    const data: EventData = { event: new Event("type"), args: [] };
+    const data: EventData = { event: new Event("mousedown"), args: [] };
     expect(classifier(data, processor)).toBe(undefined);
     expect(data.device).toBe("mouse");
     expect(data.eventType).toBe("start");

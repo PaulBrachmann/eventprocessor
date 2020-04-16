@@ -2,6 +2,7 @@ import { BreakException } from "../eventprocessor";
 import {
   EventData,
   EventLike,
+  EventMap,
   EventMiddleware,
   IEventProcessor,
 } from "../types";
@@ -15,20 +16,26 @@ import {
   RichMiddleware,
 } from "./types";
 
+export type classifyEventMap = Partial<
+  Record<keyof EventMap, [DeviceType, EventType]>
+>;
+
 /** Default mouse/touch event map */
-const defaultEventMap: {
-  [type: string]: [DeviceType, EventType];
-} = {
-  gesturestart: ["_gesture", "start"],
-  gesturemove: ["_gesture", "move"],
+const defaultEventMap: classifyEventMap = {
   gestureend: ["_gesture", "end"],
+  gesturemove: ["_gesture", "move"],
+  gesturestart: ["_gesture", "start"],
   keydown: ["key", "start"],
   keyup: ["key", "end"],
   mousedown: ["mouse", "start"],
+  mouseenter: ["mouse", "start"],
+  mouseleave: ["mouse", "end"],
   mousemove: ["mouse", "move"],
   mouseup: ["mouse", "end"],
   pointercancel: ["pointer", "end"],
   pointerdown: ["pointer", "start"],
+  pointerenter: ["mouse", "start"],
+  pointerleave: ["mouse", "end"],
   pointermove: ["pointer", "move"],
   pointerup: ["pointer", "end"],
   touchcancel: ["touch", "end"],
@@ -46,11 +53,9 @@ export { defaultEventMap as eventMap };
  * @param eventMap An object mapping from `event.type` to `[deviceName, eventClass]`
  */
 export const classify = <T>(
-  eventMap: {
-    [type: string]: [DeviceType, EventType];
-  } = defaultEventMap,
+  eventMap: classifyEventMap = defaultEventMap,
 ): RichMiddleware<T> => (data) => {
-  const type = eventMap[data.event.type];
+  const type = eventMap[data.event.type as keyof EventMap];
 
   if (type) {
     [data.device, data.eventType] = type;
