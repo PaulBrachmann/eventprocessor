@@ -7,7 +7,7 @@ describe("mapKeys", () => {
     RichEventData,
     RichEventState & KeysPressedState
   >();
-  let data: RichEventData;
+  let data: RichEventData<string, KeyboardEvent>;
   const mapper = () => ({ type: "test" });
   const mapper2 = () => ({ type: "test2" });
 
@@ -49,6 +49,13 @@ describe("mapKeys", () => {
     expect(data.actions).toBe(undefined);
   });
 
+  it("should not generate an action from unrecognized key combinations", () => {
+    expect(mapKeys({ keys: [["Shift", "b"]], mapper })(data, processor)).toBe(
+      undefined,
+    );
+    expect(data.actions).toBe(undefined);
+  });
+
   it("should generate an action from a single key", () => {
     expect(mapKeys({ keys: ["b"], mapper })(data, processor)).toBe(undefined);
     expect(data.actions).toEqual([{ type: "test" }]);
@@ -58,6 +65,19 @@ describe("mapKeys", () => {
     expect(mapKeys({ keys: ["Control", "b"], mapper })(data, processor)).toBe(
       undefined,
     );
+    expect(data.actions).toEqual([{ type: "test" }]);
+  });
+
+  it("should generate an action from multiple key combinations", () => {
+    expect(
+      mapKeys({
+        keys: [
+          ["Meta", "b"],
+          ["Control", "b"],
+        ],
+        mapper,
+      })(data, processor),
+    ).toBe(undefined);
     expect(data.actions).toEqual([{ type: "test" }]);
   });
 

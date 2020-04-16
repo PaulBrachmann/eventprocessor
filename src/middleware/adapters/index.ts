@@ -1,16 +1,14 @@
 import keyAdapter from "./keyboard";
 import pointerAdapter from "./pointer";
 
+export * from "./keyboard";
 export { keyAdapter, pointerAdapter };
-export { areKeysPressed, mapKeys } from "./keyboard";
-export {
-  default as mouseAdapter,
-  mapMouse,
-  MouseInteractionType,
-  trackMousePosition,
-} from "./mouse";
+
+export * from "./mouse";
+export { default as mouseAdapter } from "./mouse";
 export { default as touchAdapter } from "./touch";
-export { mapWheel, WheelInteractionType } from "./wheel";
+
+export * from "./wheel";
 
 export default (handleUnidentified?: boolean) => [
   keyAdapter({ cmdIsCtrl: true }),
