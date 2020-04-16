@@ -47,6 +47,7 @@ describe("touchAdapter", () => {
         startTime: expect.anything(),
         altKey: false,
         ctrlKey: false,
+        metaKey: false,
         shiftKey: false,
       },
     );
@@ -66,6 +67,7 @@ describe("touchAdapter", () => {
         startTime: expect.anything(),
         altKey: false,
         ctrlKey: false,
+        metaKey: false,
         shiftKey: false,
       },
     );

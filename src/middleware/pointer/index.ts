@@ -20,8 +20,9 @@ export interface PointerContext {
   startTime: DOMTimeStamp | DOMHighResTimeStamp;
 
   altKey?: boolean;
-  ctrlKey?: boolean;
   button?: PointerButton;
+  ctrlKey?: boolean;
+  metaKey?: boolean;
   shiftKey?: boolean;
 }
 

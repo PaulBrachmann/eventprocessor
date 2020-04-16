@@ -10,6 +10,7 @@ const buildPointerEvent = (type: string, data: Partial<PointerEvent>) =>
     buttons: 0,
     altKey: false,
     ctrlKey: false,
+    metaKey: false,
     shiftKey: false,
     timeStamp: 0,
     ...data,
@@ -44,8 +45,9 @@ describe("pointerAdapter", () => {
         device: "mouse",
         startTime: expect.anything(),
         altKey: false,
-        ctrlKey: false,
         button: 0,
+        ctrlKey: false,
+        metaKey: false,
         shiftKey: false,
       },
     );

@@ -19,8 +19,9 @@ const buildPointer = <ID = string>(id: ID, event: MouseEvent) =>
     startTime: event.timeStamp,
 
     altKey: event.altKey,
-    ctrlKey: event.ctrlKey,
     button: event.button,
+    ctrlKey: event.ctrlKey,
+    metaKey: event.metaKey,
     shiftKey: event.shiftKey,
   });
 

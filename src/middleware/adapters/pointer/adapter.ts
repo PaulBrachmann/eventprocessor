@@ -32,8 +32,9 @@ const buildPointer = <ID = string>(
     startTime: event.timeStamp,
 
     altKey: event.altKey,
-    ctrlKey: event.ctrlKey,
     button: event.button,
+    ctrlKey: event.ctrlKey,
+    metaKey: event.metaKey,
     shiftKey: event.shiftKey,
   });
 
