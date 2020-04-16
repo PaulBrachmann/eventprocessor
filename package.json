@@ -1,6 +1,6 @@
 {
   "name": "eventprocessor",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "A middleware-based event-handling system",
   "keywords": [],
   "homepage": "https://github.com/PaulBrachmann/eventprocessor#readme",
