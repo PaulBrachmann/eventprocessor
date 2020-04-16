@@ -38,7 +38,7 @@ const mapKeys = <
     KeysPressedState
 >(
   ...bindings: KeyBinding<ID>[]
-): RichMiddleware<T, ID, KeyboardEvent> => (data, processor) => {
+): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device !== "key" || data.eventType !== "start") return;
 
   const keysPressed = processor.get("keysPressed");
@@ -47,9 +47,17 @@ const mapKeys = <
   const matchingBinding = bindings.find(({ keys }) =>
     Array.isArray(keys[0])
       ? ~(keys as string[][]).findIndex((combination) =>
-          matchKeys(combination, data.event.key, keysPressed!),
+          matchKeys(
+            combination,
+            (data.event as KeyboardEvent).key,
+            keysPressed!,
+          ),
         )
-      : matchKeys(keys as string[], data.event.key, keysPressed!),
+      : matchKeys(
+          keys as string[],
+          (data.event as KeyboardEvent).key,
+          keysPressed!,
+        ),
   );
 
   if (matchingBinding) {

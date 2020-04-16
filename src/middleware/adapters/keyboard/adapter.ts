@@ -20,11 +20,11 @@ const keyAdapter = <
     KeysPressedState
 >(options?: {
   cmdIsCtrl?: boolean;
-}): RichMiddleware<T, ID, KeyboardEvent> => (data, processor) => {
+}): RichMiddleware<T, ID> => (data, processor) => {
   if (data.device !== "key") return;
 
   processor.update("keysPressed", (keysPressed = {}) => {
-    const { event } = data;
+    const event = data.event as KeyboardEvent;
     if (data.eventType === "start" && !event.repeat) {
       keysPressed[event.key] = true;
     } else if (data.eventType === "end") {
