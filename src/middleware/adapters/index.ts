@@ -13,7 +13,7 @@ export { default as touchAdapter } from "./touch";
 export { mapWheel, WheelInteractionType } from "./wheel";
 
 export default (handleUnidentified?: boolean) => [
-  keyAdapter(),
+  keyAdapter({ cmdIsCtrl: true }),
   pointerAdapter(handleUnidentified),
 ];
 

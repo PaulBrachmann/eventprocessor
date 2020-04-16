@@ -1,20 +1,42 @@
 import { KeysPressedState, RichEventState, RichMiddleware } from "../../types";
 
-/** Keyboard adapter, writes the the currently pressed keys to the event processor's state. */
+const deriveCtrlKeyEvent = (event: KeyboardEvent) => ({
+  ...event,
+  code: event.location === 2 ? "ControlRight" : "ControlLeft",
+  key: "Control",
+  which: 17,
+});
+const cmdKey = "Meta";
+
+/**
+ * Keyboard adapter, writes the the currently pressed keys to the event processor's state.
+ *
+ * @param options.cmdIsCtrl If set, the command key on Mac keyboards can also
+ * trigger key bindings that require the "Control" key.
+ */
 const keyAdapter = <
   ID = string,
   T extends RichEventState & KeysPressedState = RichEventState &
     KeysPressedState
->(): RichMiddleware<T, ID> => (data, processor) => {
+>(options?: {
+  cmdIsCtrl?: boolean;
+}): RichMiddleware<T, ID, KeyboardEvent> => (data, processor) => {
   if (data.device !== "key") return;
 
   processor.update("keysPressed", (keysPressed = {}) => {
     const { event } = data;
-    if (data.eventType === "start" && !(event as KeyboardEvent).repeat) {
-      keysPressed[(event as KeyboardEvent).key] = true;
+    if (data.eventType === "start" && !event.repeat) {
+      keysPressed[event.key] = true;
     } else if (data.eventType === "end") {
-      keysPressed[(event as KeyboardEvent).key] = false;
+      keysPressed[event.key] = false;
     }
+
+    if (options?.cmdIsCtrl && event.key === cmdKey) {
+      processor.dispatch(
+        new KeyboardEvent(event.type, deriveCtrlKeyEvent(event)),
+      );
+    }
+
     return keysPressed;
   });
 };

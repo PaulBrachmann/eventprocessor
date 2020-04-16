@@ -13,7 +13,7 @@ describe("keyAdapter", () => {
   });
 
   it("should do nothing for an unclassified event", () => {
-    const data: RichEventData = {
+    const data: RichEventData<string, KeyboardEvent> = {
       args: [],
       event: new KeyboardEvent("keydown", { key: "a" }),
     };
@@ -24,7 +24,7 @@ describe("keyAdapter", () => {
   });
 
   it("should do nothing for an unrecognized event", () => {
-    const data: RichEventData = {
+    const data: RichEventData<string, KeyboardEvent> = {
       args: [],
       device: "key",
       event: new KeyboardEvent("keydown", { key: "a" }),
@@ -37,7 +37,7 @@ describe("keyAdapter", () => {
   });
 
   it("should register a key being pressed", () => {
-    const data: RichEventData = {
+    const data: RichEventData<string, KeyboardEvent> = {
       args: [],
       device: "key",
       event: new KeyboardEvent("keydown", { key: "a" }),
@@ -54,7 +54,7 @@ describe("keyAdapter", () => {
 
   it("should register a key being lifted", () => {
     processor.set("keysPressed", { a: true, Control: true });
-    const data: RichEventData = {
+    const data: RichEventData<string, KeyboardEvent> = {
       args: [],
       device: "key",
       event: new KeyboardEvent("keyup", { key: "+" }),
