@@ -21,6 +21,8 @@ export type GestureEvent<ID = string> = CustomEvent<{
   id: ID;
   /** The gesture's origin. */
   origin: TransformData;
+  /** All pointers contributing to this gesture. */
+  pointers: Pointer<ID>[];
   /** The gesture's current target. */
   target: TransformData;
   /** The delta transformation from origin to target. */
@@ -32,6 +34,7 @@ export const createGestureEvent = <ID = string>(
   type: string,
   gesture: TransformGesture,
   id: ID,
+  pointers: Pointer<ID>[],
   continued = false,
 ): GestureEvent<ID> =>
   new CustomEvent(type, {
@@ -40,6 +43,7 @@ export const createGestureEvent = <ID = string>(
       continued,
       id,
       origin: gesture.getOrigin(),
+      pointers,
       target: gesture.getTarget(),
       transform: gesture.getTransform(),
     },
@@ -113,7 +117,13 @@ const gesturize = <
         if (gesture) {
           if (splitRebaseEvents) {
             processor.dispatch(
-              createGestureEvent("gestureend", gesture, id, true),
+              createGestureEvent(
+                "gestureend",
+                gesture,
+                id,
+                filteredPointers,
+                true,
+              ),
             );
 
             gesture = new TransformGesture(
@@ -123,7 +133,13 @@ const gesturize = <
 
             gestures[id] = gesture;
             processor.dispatch(
-              createGestureEvent("gesturestart", gesture, id, true),
+              createGestureEvent(
+                "gesturestart",
+                gesture,
+                id,
+                filteredPointers,
+                true,
+              ),
             );
           } else {
             gesture.rebase(TransformData.fromPointers(filteredPointers));
@@ -140,7 +156,9 @@ const gesturize = <
           processor.set("gestures", gestures);
 
           // Dispatch start event
-          processor.dispatch(createGestureEvent("gesturestart", gesture, id));
+          processor.dispatch(
+            createGestureEvent("gesturestart", gesture, id, filteredPointers),
+          );
         }
       });
       break;
@@ -160,7 +178,9 @@ const gesturize = <
         gesture.setTarget(TransformData.fromPointers(filteredPointers));
 
         // Dispatch move event
-        processor.dispatch(createGestureEvent("gesturemove", gesture, id));
+        processor.dispatch(
+          createGestureEvent("gesturemove", gesture, id, filteredPointers),
+        );
       });
       break;
     case "end":
@@ -190,7 +210,13 @@ const gesturize = <
         if (filteredPointersCount) {
           if (splitRebaseEvents) {
             processor.dispatch(
-              createGestureEvent("gestureend", gesture, id, true),
+              createGestureEvent(
+                "gestureend",
+                gesture,
+                id,
+                filteredPointers,
+                true,
+              ),
             );
 
             gesture = new TransformGesture(
@@ -200,7 +226,13 @@ const gesturize = <
 
             gestures[id] = gesture;
             processor.dispatch(
-              createGestureEvent("gesturestart", gesture, id, true),
+              createGestureEvent(
+                "gesturestart",
+                gesture,
+                id,
+                filteredPointers,
+                true,
+              ),
             );
           } else {
             gesture.rebase(TransformData.fromPointers(filteredPointers));
@@ -210,7 +242,9 @@ const gesturize = <
         }
 
         // Dispatch end event
-        processor.dispatch(createGestureEvent("gestureend", gesture, id));
+        processor.dispatch(
+          createGestureEvent("gestureend", gesture, id, filteredPointers),
+        );
       });
       break;
     default:
