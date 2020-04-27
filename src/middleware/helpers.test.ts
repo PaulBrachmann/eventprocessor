@@ -28,6 +28,7 @@ describe("getZoomToCursorTransform", () => {
       "gesturemove",
       new TransformGesture(new TransformData(248, 328)),
       "uuid",
+      [],
     );
     expect(getZoomToCursorTransform(event)).toEqual(new TransformData());
   });
@@ -37,6 +38,7 @@ describe("getZoomToCursorTransform", () => {
       "gesturemove",
       new TransformGesture().setTarget(new TransformData(0, 0, 2)),
       "uuid",
+      [],
     );
     expect(getZoomToCursorTransform(event)).toEqual(new TransformData(0, 0, 2));
   });
@@ -48,6 +50,7 @@ describe("getZoomToCursorTransform", () => {
         new TransformData(80, 80, 2),
       ),
       "uuid",
+      [],
     );
     expect(getZoomToCursorTransform(event)).toEqual(
       new TransformData(-80, -80, 2),
