@@ -209,6 +209,7 @@ const gesturize = <
         // Check if more pointers are involved in this gesture
         if (filteredPointersCount) {
           if (splitRebaseEvents) {
+            // Dispatch continued end event
             processor.dispatch(
               createGestureEvent(
                 "gestureend",
@@ -224,6 +225,7 @@ const gesturize = <
               gesture.context,
             );
 
+            // Dispatch continued start event
             gestures[id] = gesture;
             processor.dispatch(
               createGestureEvent(
@@ -239,12 +241,12 @@ const gesturize = <
           }
         } else {
           delete gestures[id];
-        }
 
-        // Dispatch end event
-        processor.dispatch(
-          createGestureEvent("gestureend", gesture, id, filteredPointers),
-        );
+          // Dispatch end event
+          processor.dispatch(
+            createGestureEvent("gestureend", gesture, id, filteredPointers),
+          );
+        }
       });
       break;
     default:
